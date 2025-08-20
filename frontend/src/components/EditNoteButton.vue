@@ -1,0 +1,58 @@
+<script setup>
+import { ref } from 'vue'
+import ModalAddNote from './ModalAddNote.vue'
+import { useNoteStore } from '@/stores/noteStore'
+import ErrorModal from './ErrorModal.vue'
+
+const props = defineProps({
+  note: { type: Object, required: true }
+})
+
+const store = useNoteStore()
+const showEditModal = ref(false)
+const showError = ref(false)
+const errorMessage = ref("")
+
+const UpdateNote = async (note) => {
+  try {
+    await store.updateNote({ ...note, id: props.note.id })
+    await store.getAllNotes()
+    showEditModal.value = false
+    
+  } catch (error) {
+    errorMessage.value = error.message
+        showError.value = true
+  }
+}
+</script>
+
+<template>
+  <div class="inline-block">
+    <!-- Botón Editar -->
+    <svg 
+      @click="showEditModal = true"
+      class="w-6 h-6 cursor-pointer hover:text-yellow-600"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="m14.304 4.844 2.852 2.852M7 7H4v12h12v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+    </svg>
+
+    <!-- Modal para editar -->
+    <ModalAddNote
+      :note="props.note"
+      :show="showEditModal"
+      @close="showEditModal = false"
+      @saved="UpdateNote"
+    />
+
+
+    <ErrorModal
+  :show="showError" 
+      :message="errorMessage" 
+      @close="showError = false" 
+  />
+  </div>
+</template>
