@@ -1,7 +1,7 @@
 ﻿
 using Entity;
 
-namespace Services
+namespace Services.Notes
 {
     public interface INoteService
     {

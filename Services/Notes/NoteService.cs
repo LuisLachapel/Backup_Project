@@ -1,7 +1,7 @@
 ﻿using Entity;
-using Persistence;
+using Persistence.Notes;
 
-namespace Services
+namespace Services.Notes
 {
     public class NoteService : INoteService
     {
@@ -53,7 +53,7 @@ namespace Services
            var noteExist =  _function.GetById(id);
             if(noteExist != null)
             {
-                if (String.IsNullOrEmpty(note.title))
+                if (string.IsNullOrEmpty(note.title))
                 {
                     throw new ArgumentException("El título es obligatorio");
                 }

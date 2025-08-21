@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 using System.Data;
 
 
-namespace Persistence
+namespace Persistence.Notes
 {
     public class NotePersistence : INotePersistence
     {

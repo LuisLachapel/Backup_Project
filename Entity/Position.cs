@@ -10,7 +10,7 @@ namespace Entity
         [StringLength(20,MinimumLength =1,ErrorMessage = "El nombre de la posición debe tener entre {2} y {1} caracteres.")]
         public string name { get; set; } = String.Empty;
 
-        [StringLength(50,MinimumLength = 1,ErrorMessage = "")]
+        [StringLength(50,ErrorMessage = "La descripción solo permite un maximo de 50 caracteres.")]
         public string description { get; set; } = String.Empty;
     }
 }

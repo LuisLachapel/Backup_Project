@@ -1,6 +1,5 @@
 ﻿using Entity;
-
-namespace Persistence
+namespace Persistence.Notes
 {
     public interface INotePersistence
     {
