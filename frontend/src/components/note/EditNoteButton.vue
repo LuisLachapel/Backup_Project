@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-import ModalAddNote from './ModalAddNote.vue'
+import ModalAddNote from '@/components/ModalAddNote.vue'
 import { useNoteStore } from '@/stores/noteStore'
-import ErrorModal from './ErrorModal.vue'
+import ErrorModal from '@/components/ErrorModal.vue'
 
 const props = defineProps({
   note: { type: Object, required: true }

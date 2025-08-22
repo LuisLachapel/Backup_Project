@@ -1,6 +1,6 @@
 <script setup>
-import DeleteNoteButton from './DeleteNoteButton.vue'
-import EditNoteButton from './EditNoteButton.vue'
+import DeleteNoteButton from '@/components/note/DeleteNoteButton.vue'
+import EditNoteButton from '@/components/note/EditNoteButton.vue'
 
 
 const props = defineProps({

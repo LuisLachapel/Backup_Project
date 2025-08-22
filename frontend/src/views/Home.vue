@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useNoteStore } from '@/stores/noteStore';
 import ErrorModal from '@/components/ErrorModal.vue';
-import CardNote from '@/components/CardNote.vue';
+import CardNote from '@/components/note/CardNote.vue';
 import CreateNoteButton from '@/components/CreateNoteButton.vue';
 
 // revisar: https://flowbite.com/docs/components/speed-dial/
