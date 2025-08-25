@@ -62,7 +62,12 @@ namespace Persistence.Users
                                 user.id = reader.GetInt32(idField);
                                 user.name = reader.GetString(nameField);
                                 user.positionId = reader.GetInt32(positionIdField);
-                                user.position.name = reader.GetString(positionNameFied);
+                                user.position = new Position
+                                {
+                                    id = reader.GetInt32(positionIdField),
+                                    name = reader.GetString(positionNameFied),
+
+                                };
                                 users.Add(user);
                             }
                             
