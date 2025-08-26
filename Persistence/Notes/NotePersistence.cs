@@ -56,6 +56,8 @@ namespace Persistence.Notes
                             int titleField = reader.GetOrdinal("title");
                             int descriptionField = reader.GetOrdinal("description");
                             int dateField = reader.GetOrdinal("date");
+                            int userIdField = reader.GetOrdinal("UserId");
+                            int usernameField = reader.GetOrdinal("username");
                             while (reader.Read())
                             {
                                 Note note = new Note();
@@ -63,6 +65,12 @@ namespace Persistence.Notes
                                 note.title = reader.GetString(titleField);
                                 note.description = reader.IsDBNull(descriptionField)? null: reader.GetString(descriptionField);
                                 note.date = reader.IsDBNull(dateField) ? DateTime.MinValue : reader.GetDateTime(dateField);
+                                note.userId = reader.GetInt32(userIdField);
+                                note.user = new User
+                                {
+                                    id = reader.GetInt32(userIdField),
+                                    name = reader.GetString(usernameField),
+                                };
                                 notes.Add(note);
 
                             }
@@ -99,6 +107,8 @@ namespace Persistence.Notes
                             int titleField = reader.GetOrdinal("title");
                             int descriptionField = reader.GetOrdinal("description");
                             int dateField = reader.GetOrdinal("date");
+                            int userIdField = reader.GetOrdinal("UserId");
+                            int usernameField = reader.GetOrdinal("username");
                             while (reader.Read())
                             {
                                 note = new Note
@@ -106,7 +116,13 @@ namespace Persistence.Notes
                                     id = reader.GetInt32(idField),
                                     title = reader.GetString(titleField),
                                     description = reader.IsDBNull(descriptionField) ? "" : reader.GetString(descriptionField),
-                                    date = reader.IsDBNull(dateField) ? DateTime.MinValue : reader.GetDateTime(dateField)
+                                    date = reader.IsDBNull(dateField) ? DateTime.MinValue : reader.GetDateTime(dateField),
+                                    userId = reader.GetInt32(userIdField),
+                                    user = new User
+                                    {
+                                        id = reader.GetInt32(userIdField),
+                                        name = reader.GetString(usernameField),
+                                    }
                                 };
                             }
 
@@ -209,6 +225,7 @@ namespace Persistence.Notes
                         command.Parameters.AddWithValue("@title", note.title);
                         command.Parameters.AddWithValue("@description", note.description);
                         command.Parameters.AddWithValue("@date", note.date);
+                        command.Parameters.AddWithValue("@userId", note.userId);
                         command.ExecuteNonQuery();
                     }
 
@@ -234,6 +251,7 @@ namespace Persistence.Notes
                         command.Parameters.AddWithValue("@id", note.id);
                         command.Parameters.AddWithValue("@title", note.title);
                         command.Parameters.AddWithValue("@description", note.description);
+                        command.Parameters.AddWithValue("@userId", note.userId);
                         command.ExecuteNonQuery();
                     }
 

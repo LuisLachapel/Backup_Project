@@ -1,17 +1,17 @@
-﻿
-using Entity;
+﻿using Services.Notes.Models;
+
 
 namespace Services.Notes
 {
     public interface INoteService
     {
-        List<Note> GetAllNotes();
-        Note GetById(int id);
+        List<GetNoteModel> GetAllNotes();
+        GetNoteModel GetById(int id);
 
-        void InsertNote(Note note);
-        void updateNote(int  id, Note note);
+        void InsertNote(CreateNoteModel note);
+        void updateNote(int  id, UpdateNoteModel note);
         int Delete(int id);
-        List<Note> GetNotesByDate(DateTime? startDate, DateTime? endDate);
+        List<GetNoteModel> GetNotesByDate(DateTime? startDate, DateTime? endDate);
         DateTime? GetMaxDate();
 
     }
