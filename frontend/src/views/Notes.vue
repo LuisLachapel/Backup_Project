@@ -50,7 +50,7 @@ const resetFilter = async () => {
     <header class="container mx-auto px-2.5 flex items-center justify-between ">
 
       
-      <h2 class="text-2xl font-bold">Registros</h2>
+      <h2 class="text-2xl font-bold">Backup System</h2>
       
       <div class="flex flex-wrap items-center gap-2">
         <h2 class="text-lg font-bold">Filtrar</h2>

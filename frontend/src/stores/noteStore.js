@@ -3,7 +3,8 @@ import axios from "axios";
 
 export const useNoteStore = defineStore("note", {
     state: () => ({
-        notes: []
+        notes: [],
+        users: []
     }),
     actions: {
         async getAllNotes() {
@@ -26,6 +27,10 @@ export const useNoteStore = defineStore("note", {
                 }
                 throw new Error("Error desconocido");
             }
+        },
+        async getAllUser(){
+            const {data} = await axios.get("https://localhost:7108/User/get-all")
+            return this.users = data
         },
         async deleteNote(id) {
             await axios.delete(`https://localhost:7108/Note/delete/${id}`)

@@ -5,6 +5,8 @@ defineProps({
   message: String
 });
 
+const emit = defineEmits(["close"])
+
 </script>
 
 <template>

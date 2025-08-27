@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue"
+import { ref, watch, onMounted } from "vue"
 import { useNoteStore } from "@/stores/noteStore"
 
 const props = defineProps({
@@ -13,7 +13,11 @@ const noteStore = useNoteStore()
 
 const title = ref("")
 const description = ref("")
+const userId = ref(null)
 
+onMounted(() =>{
+  noteStore.getAllUser();
+})
 
 watch(
   () => props.show,
@@ -23,6 +27,7 @@ watch(
         const data = await noteStore.getById(props.note.id)
         title.value = data.title
         description.value = data.description
+        userId.value = data.userId ?? null 
       } catch (error) {
         console.error("Error cargando la nota:", error)
       }
@@ -30,6 +35,7 @@ watch(
     if (val && !props.note) {
       title.value = ""
       description.value = ""
+      userId.value = null
     }
   }
 )
@@ -40,14 +46,16 @@ const saveNote = () => {
     const data = {
       id: props.note.id,
       title: title.value,
-      description: description.value
+      description: description.value,
+      userId: userId.value 
     }
     emit("saved", data)
   } else {
     // Crear
     const data = {
       title: title.value,
-      description: description.value
+      description: description.value,
+      userId: userId.value 
     }
     emit("saved", data)
   }
@@ -68,7 +76,7 @@ const close = () => {
     >
       <div class="relative p-4 w-full max-w-md max-h-full">
         <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-          <!-- Header del modal -->
+          <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ props.note ? "Editar nota" : "Crear nota" }}
@@ -82,8 +90,8 @@ const close = () => {
             </button>
           </div>
 
-          <!-- Body del modal -->
-          <form class="p-4" @submit="saveNote">
+          <!-- Body -->
+          <form class="p-4" @submit.prevent="saveNote">
             <div class="grid gap-4 mb-4">
               <div>
                 <label class="block mb-2 text-sm font-medium">Título</label>
@@ -93,10 +101,27 @@ const close = () => {
                   class="w-full p-2.5 border rounded-lg"
                   placeholder="Ingrese el título"
                   maxlength="20"
-                  
                 />
                 <p class="text-sm text-gray-500">{{ title.length }}/20</p>
               </div>
+
+              <div>
+                <label class="block mb-2 text-sm font-medium">Asignar a usuario</label>
+                <select
+                  v-model="userId"
+                  class="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm  border rounded-lg"
+                >
+                  <option disabled value="">Seleccione un usuario</option>
+                  <option
+                    v-for="user in noteStore.users"
+                    :key="user.id"
+                    :value="user.id"
+                  >
+                    {{ user.name }}
+                  </option>
+                </select>
+              </div>
+
               <div>
                 <label class="block mb-2 text-sm font-medium">Descripción</label>
                 <textarea
@@ -108,7 +133,11 @@ const close = () => {
                 ></textarea>
                 <p class="text-sm text-gray-500">{{ description.length }}/200</p>
               </div>
+
+              <!-- 🔹 Nuevo select de usuarios -->
+              
             </div>
+
             <button
               type="submit"
               class="w-full text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5"
@@ -121,4 +150,3 @@ const close = () => {
     </div>
   </teleport>
 </template>
-
