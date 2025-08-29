@@ -1,18 +1,18 @@
 <script setup>
 import { ref } from 'vue';
-import ModalAddNote from '../ModalAddNote.vue';
-import { useNoteStore } from '@/stores/noteStore';
+import ModalAddUser from './ModalAddUser.vue';
+import { useUserStore } from '@/stores/userStore';
 import ErrorModal from '../ErrorModal.vue';
 
 const show = ref(false)
-const store = useNoteStore()
+const store = useUserStore();
 const showCreateModal = ref(false)
 const showError = ref(false)
 const errorMessage = ref("")
 
-const CreateNote = async (note) =>{
+const CreateUser = async (user) => {
     try {
-        await store.createNote(note)
+        await store.createUser(user)
         showCreateModal.value = false
     } catch (error) {
         errorMessage.value = error.message
@@ -60,7 +60,20 @@ const CreateNote = async (note) =>{
                 <span class="block mb-px text-xs font-medium">descargar</span>
             </button>
 
-            <!--Crear-->
+            <!--Crear posición-->
+            <button type="button" @click="showCreateModal = true"
+                class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                <svg class="w-5 h-5 mx-auto mb-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+                </svg>
+
+
+                <span class="block mb-px text-xs font-medium">Cargo</span>
+            </button>
+
+            <!--Crear Usuario-->
             <button type="button" @click="showCreateModal = true"
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-5 h-5 mx-auto mb-1 text-gray-800 dark:text-white" aria-hidden="true"
@@ -71,6 +84,8 @@ const CreateNote = async (note) =>{
 
                 <span class="block mb-px text-xs font-medium">Crear</span>
             </button>
+
+
         </div>
         <button type="button" data-dial-toggle="speed-dial-menu-text-inside-button"
             aria-controls="speed-dial-menu-text-inside-button" aria-expanded="false"
@@ -84,12 +99,8 @@ const CreateNote = async (note) =>{
         </button>
     </div>
 
-    <ModalAddNote :note= "null" :show="showCreateModal" @close = "showCreateModal = false" @saved = "CreateNote"/>
-    <ErrorModal
-  :show="showError" 
-      :message="errorMessage" 
-      @close="showError = false" 
-  />
+    <ModalAddUser :user="null" :show="showCreateModal" @close="showCreateModal = false" @saved="CreateUser" />
+    <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
 
 
 </template>

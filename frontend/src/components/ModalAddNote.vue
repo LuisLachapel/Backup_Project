@@ -133,9 +133,6 @@ const close = () => {
                 ></textarea>
                 <p class="text-sm text-gray-500">{{ description.length }}/200</p>
               </div>
-
-              <!-- 🔹 Nuevo select de usuarios -->
-              
             </div>
 
             <button

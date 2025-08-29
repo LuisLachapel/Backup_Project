@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import EditUserButton from './EditUserButton.vue';
+import DeleteUserButton from './DeleteUserButton.vue';
 
 const store = useUserStore()
 
@@ -22,15 +24,15 @@ onMounted(async () => {
     class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm "
   >
     <header class="flex items-center justify-between">
-      <!-- Título -->
+      <!-- Nombre -->
       <div class="flex items-center gap-2">
         <h5 class="text-2xl font-bold">{{ user.name}}</h5>
-        <!-- Botón Editar 
-        <EditNoteButton :note="note" /> -->
+        <!-- Botón Editar -->
+        <EditUserButton :user="user" /> 
       </div>
 
-      <!-- Eliminar 
-      <DeleteNoteButton :id="note.id" />-->
+      <!-- Eliminar -->
+      <DeleteUserButton :id="user.id" />
     </header>
 
     <p class="mb-2">{{ user.position }}</p>
