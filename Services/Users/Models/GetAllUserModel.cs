@@ -7,5 +7,6 @@ namespace Services.Users.Models
         public string name { get; set; } = string.Empty;
         public int positionId { get; set; }
         public string position {  get; set; } = string.Empty ;
+        public DateTime creationDate { get; set; }
     }
 }

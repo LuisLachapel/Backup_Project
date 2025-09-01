@@ -56,11 +56,13 @@ namespace Persistence.Users
                             int nameField = reader.GetOrdinal("name");
                             int positionIdField = reader.GetOrdinal("positionId");
                             int positionNameFied = reader.GetOrdinal("position");
+                            int dateField = reader.GetOrdinal("creationDate");
                             while (reader.Read())
                             {
                                 User user = new User();
                                 user.id = reader.GetInt32(idField);
                                 user.name = reader.GetString(nameField);
+                                user.creationDate = reader.GetDateTime(dateField);
                                 user.positionId = reader.GetInt32(positionIdField);
                                 user.position = new Position
                                 {

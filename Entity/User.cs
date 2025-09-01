@@ -14,6 +14,7 @@ namespace Entity
         public int positionId { get; set; }
         public Position? position { get; set; }
 
+        public DateTime creationDate { get; set; }
         public Collection<Note>? notes { get; set; }
 
 

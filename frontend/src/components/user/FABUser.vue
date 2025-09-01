@@ -20,6 +20,10 @@ const CreateUser = async (user) => {
     }
 }
 
+const dowload = async () =>{
+    await store.dowloadPdf()
+}
+
 
 </script>
 
@@ -48,7 +52,9 @@ const CreateUser = async (user) => {
                 </svg>
                 <span class="block mb-px text-xs font-medium">Print</span>
             </button>
-            <button type="button"
+
+            <!--Descargar-->
+            <button type="button" @click="dowload"
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-4 h-4 mx-auto mb-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor" viewBox="0 0 20 20">

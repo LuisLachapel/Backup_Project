@@ -23,7 +23,7 @@ onMounted(() =>{
           <th class="px-4 py-2 border-b">Nombre</th>
           <th class="px-4 py-2 border-b">Descripción</th>
           <th class="px-4 py-2 border-b text-center">Editar</th>
-          <th class="px-4 py-2 border-b text-center">Eliminar</th>
+          
         </tr>
       </thead>
       <tbody>
@@ -38,11 +38,6 @@ onMounted(() =>{
           <!-- Botón Editar -->
           <td class="px-4 py-2 border-b text-center">
             <EditPositionButton :position="position"/>
-          </td>
-
-          <!-- Botón Eliminar -->
-          <td class="px-4 py-2 border-b text-center">
-            <DeletePositionButton :id="position.id"/>
           </td>
         </tr>
       </tbody>

@@ -35,7 +35,8 @@ namespace Services.Users
                 id = u.id,
                 name = u.name,
                 positionId = u.positionId,
-                position  = u.position?.name ?? string.Empty
+                position  = u.position?.name ?? string.Empty,
+                creationDate = u.creationDate,
             }).ToList();
 
             
