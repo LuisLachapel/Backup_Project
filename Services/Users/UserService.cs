@@ -2,6 +2,7 @@
 using Persistence.Users;
 using Services.Positions;
 using Services.Users.Models;
+using System.ComponentModel.DataAnnotations;
 namespace Services.Users
 {
     public class UserService : IUserService
@@ -57,6 +58,12 @@ namespace Services.Users
                 position = user.position?.name ?? string.Empty
 
             };
+        }
+
+        public List<UserNotesSummary> GetUserNotesSummaries(DateTime? startDate, DateTime? endDate)
+        {
+            var summary = _functions.GetAllSumary(startDate, endDate);
+            return summary;
         }
 
         public void InsertUser(CreateUserModel model)

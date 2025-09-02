@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
-
 using Entity;
 
 namespace Persistence.Users
@@ -35,6 +34,49 @@ namespace Persistence.Users
                     throw new Exception("Error en eliminar usuario " + ex.Message, ex);
                 }
                 return response;
+            }
+        }
+
+        public List<UserNotesSummary> GetAllSumary(DateTime? startDate, DateTime? endDate)
+        {
+            
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using(SqlCommand command = new SqlCommand("userReport", connection))
+                    {
+                        List<UserNotesSummary> notes = new List<UserNotesSummary>();
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@startDate", startDate);
+                        command.Parameters.AddWithValue("@endDate", endDate);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int nameField = reader.GetOrdinal("name");
+                            int positionField = reader.GetOrdinal("cargo");
+                            int recordsField = reader.GetOrdinal("registros");
+                            int statusField = reader.GetOrdinal("status");
+                            while (reader.Read())
+                            {
+                                UserNotesSummary note = new UserNotesSummary();
+                                note.name = reader.GetString(nameField);
+                                note.position = reader.GetString(positionField);
+                                note.records = reader.GetInt32(recordsField);
+                                note.status = reader.GetBoolean(statusField) ==  true ? "activo" : "inactivo";
+                                notes.Add(note);
+                            }
+                        }
+                        return notes;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    connection.Close();
+                    throw new Exception("Error en obtener el resumen de los datos " + ex.Message, ex );
+                }
             }
         }
 

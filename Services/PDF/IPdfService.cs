@@ -4,6 +4,6 @@ namespace Services.PDF
 {
     public interface IPdfService
     {
-        byte[] UserReport();
+        byte[] UserReport(DateTime? startDate, DateTime? endDate);
     }
 }

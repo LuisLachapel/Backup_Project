@@ -17,9 +17,9 @@ namespace Services.PDF
             QuestPDF.Settings.License = LicenseType.Community;
         }
 
-        public byte[] UserReport()
+        public byte[] UserReport(DateTime? startDate, DateTime? endDate)
         {
-            var users = _userService.GetAllUsers();
+            var users = _userService.GetUserNotesSummaries(startDate, endDate);
             if(users == null || !users.Any())
             {
                 throw new ArgumentException("No hay una lista de usuarios");
@@ -45,6 +45,8 @@ namespace Services.PDF
                             
                             columns.RelativeColumn(3);   // Nombre
                             columns.RelativeColumn(2);   // Cargo
+                            columns.RelativeColumn(2);   // Registro
+                            columns.RelativeColumn(2);   // Status
                         });
 
                         //Cabeceras
@@ -53,6 +55,9 @@ namespace Services.PDF
                             
                             header.Cell().Text("Nombre").Bold();
                             header.Cell().Text("Cargo").Bold();
+                            header.Cell().Text("Registro").Bold();
+                            header.Cell().Text("Status").Bold();
+                            
                         });
 
                         foreach(var user in users)
@@ -60,6 +65,9 @@ namespace Services.PDF
                             
                             table.Cell().Text(user.name);
                             table.Cell().Text(user.position);
+                            table.Cell().Text(user.records.ToString());
+                            table.Cell().Text(user.status);
+
 
                         }
                     });

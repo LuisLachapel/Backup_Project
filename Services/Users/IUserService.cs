@@ -1,4 +1,5 @@
 ﻿using Services.Users.Models;
+using Persistence.Users;
 
 namespace Services.Users
 {
@@ -11,6 +12,9 @@ namespace Services.Users
 
         void InsertUser(CreateUserModel user);
         void UpdateUser(int id, CreateUserModel user);
+
+        List<UserNotesSummary> GetUserNotesSummaries(DateTime? startDate, DateTime? endDate);
+
 
     }
 }
