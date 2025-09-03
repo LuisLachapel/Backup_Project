@@ -12,6 +12,7 @@ namespace Services.Email
             string apiUrl = "https://api.sendgrid.com/v3/mail/send";
             Env.Load(@"C:\Users\llachapell\source\repos\Backup_Project\.env");
             string apiKey = Environment.GetEnvironmentVariable("API_KEY");
+            
 
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
@@ -20,6 +21,9 @@ namespace Services.Email
 
             string emailContent = JsonConvert.SerializeObject(model);
             var response = await client.PostAsync(apiUrl, new StringContent(emailContent, Encoding.UTF8, "application/json"));
+            string respContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Status: {response.StatusCode}");
+            Console.WriteLine($"Body: {respContent}");
 
             if (response.IsSuccessStatusCode)
             {

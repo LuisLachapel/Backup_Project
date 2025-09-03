@@ -54,6 +54,7 @@ namespace Persistence.Users
                         SqlDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
+                            int idField = reader.GetOrdinal("id");
                             int nameField = reader.GetOrdinal("name");
                             int positionField = reader.GetOrdinal("cargo");
                             int recordsField = reader.GetOrdinal("registros");
@@ -61,6 +62,7 @@ namespace Persistence.Users
                             while (reader.Read())
                             {
                                 UserNotesSummary note = new UserNotesSummary();
+                                note.id = reader.GetInt32(idField);
                                 note.name = reader.GetString(nameField);
                                 note.position = reader.GetString(positionField);
                                 note.records = reader.GetInt32(recordsField);
