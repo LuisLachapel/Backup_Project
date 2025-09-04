@@ -3,10 +3,12 @@ import { ref } from 'vue';
 import ModalAddUser from './ModalAddUser.vue';
 import { useUserStore } from '@/stores/userStore';
 import ErrorModal from '../ErrorModal.vue';
+import DownloadModal from '../DownloadModal.vue';
 
 const show = ref(false)
 const store = useUserStore();
 const showCreateModal = ref(false)
+const showDownlodadModal = ref(false)
 const showError = ref(false)
 const errorMessage = ref("")
 
@@ -54,7 +56,7 @@ const dowload = async () =>{
             </button>
 
             <!--Descargar-->
-            <button type="button" @click="dowload"
+            <button type="button" @click="showDownlodadModal = true"
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-4 h-4 mx-auto mb-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor" viewBox="0 0 20 20">
@@ -107,6 +109,7 @@ const dowload = async () =>{
 
     <ModalAddUser :user="null" :show="showCreateModal" @close="showCreateModal = false" @saved="CreateUser" />
     <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
+    <DownloadModal :show="showDownlodadModal" @close="showDownlodadModal = false"/>
 
 
 </template>

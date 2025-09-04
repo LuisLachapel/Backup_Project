@@ -18,6 +18,11 @@ const router = createRouter({
       path: '/position',
       name: 'position',
       component: () =>import('@/views/Position.vue')
+    },
+    {
+      path: '/download',
+      name: 'download',
+      component: () =>import('@/components/DownloadModal.vue')
     }
     
   ],
