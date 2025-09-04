@@ -70,11 +70,30 @@ export const useUserStore = defineStore("user", {
             const { data } = await axios.get(`https://localhost:7108/User/get-by-id/${id}`)
             return data;
         },
-        async dowloadPdf() {
+        async getSummary(startDate, endDate) {
+            try {
+                const { data } = await axios.get('https://localhost:7108/User/summary', {
+                    params: { startDate, endDate }
+                })
+                return data;
+            } catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Error desconocido");
+                } else {
+                    throw new Error("Error al conectar con el servidor");
+                }
+            }
+        },
+        async dowloadPdf(startDate, endDate) {
             try {
                 const response = await axios.get('https://localhost:7108/User/report', {
+                    params: {
+                        startDate: startDate || null,
+                        endDate: endDate || null
+                    },
                     responseType: "blob"
-                })
+                });
+
                 const today = new Date();
                 const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}.pdf`;
 
@@ -87,6 +106,31 @@ export const useUserStore = defineStore("user", {
                 link.remove();
             } catch (error) {
                 throw new Error("No se pudo generar el reporte de usuarios.");
+            }
+        },
+        async downloadExcel(startDate, endDate) {
+            try {
+                const response = await axios.get("", {
+                    params: {
+                        startDate: startDate || null,
+                        endDate: endDate || null
+                    },
+                    responseType: 'blob'
+                });
+                 const today = new Date();
+        const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}.xlsx`;
+
+        // response.data ya es un Blob, no envolverlo de nuevo
+        const url = window.URL.createObjectURL(response.data);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+            } catch (error) {
+
             }
         }
     }

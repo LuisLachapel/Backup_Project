@@ -8,6 +8,6 @@ namespace Persistence.Users
         public string position {  get; set; } = string.Empty;
         public int records { get; set; }
         public string status { get; set; } = string.Empty;
-        public DateTime creationDate { get; set; }
+        
     }
 }

@@ -62,6 +62,7 @@ namespace Services.Users
 
         public List<UserNotesSummary> GetUserNotesSummaries(DateTime? startDate, DateTime? endDate)
         {
+
             var summary = _functions.GetAllSumary(startDate, endDate);
             return summary;
         }
