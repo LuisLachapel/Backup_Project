@@ -44,6 +44,28 @@ namespace Services.Files
 
                 sheet.ColumnsUsed().AdjustToContents();
 
+                //Diseño de tabla
+                var header = table.HeadersRow();
+                header.Style.Fill.BackgroundColor = XLColor.FromHtml("#257272");
+                header.Style.Font.FontColor = XLColor.White;
+
+                int rowIndex = 0;
+
+                foreach(var row in table.DataRange.Rows())
+                {
+                    if(rowIndex % 2 == 0)
+                    {
+                        row.Style.Fill.BackgroundColor = XLColor.FromHtml("#339E9E"); //#339E9E
+                    }
+                    else
+                    {
+                        row.Style.Fill.BackgroundColor = XLColor.FromHtml("#3EC1C1");
+                    }
+                    row.Style.Font.FontColor = XLColor.White;
+                    row.Style.Font.Bold = true;
+                    rowIndex++;
+                }
+
                 
                 /*
                 // Encabezado
@@ -90,6 +112,11 @@ namespace Services.Files
 
             var totalRecords = users.Sum(u => u.records);
 
+            string rangeDate = startDate.HasValue && endDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy} hasta  {endDate.Value:dd/MM/yyyy}" 
+                : startDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}": endDate.HasValue ? $" Reporte hasta {endDate.Value:dd/MM/yyyy}" : "";
+
+
+
             var document = Document.Create(container =>
             {
                 container.Page(page =>
@@ -104,15 +131,24 @@ namespace Services.Files
                     //Table
                     page.Content().Column(column =>
                     {
+
+                        if (!string.IsNullOrEmpty(rangeDate))
+                        {
+                            column.Item().AlignRight().Text(rangeDate).Italic().FontSize(11);
+
+                        }
+                        column.Item().PaddingVertical(10);
+                        
                         column.Item().Table(table =>
                         {
+                            
                             //Definición de columnas
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.RelativeColumn(2);   //id
+                                columns.RelativeColumn(1);   //id
                                 columns.RelativeColumn(3);   // Nombre
                                 columns.RelativeColumn(2);   // Cargo
-                                columns.RelativeColumn(2);   // Registro
+                                columns.RelativeColumn();   // Registro
                                 columns.RelativeColumn(2);   // Status
                             });
 
@@ -128,11 +164,11 @@ namespace Services.Files
 
                             foreach (var user in users)
                             {
-                                table.Cell().BorderBottom(0.5f).Text(user.id.ToString());
-                                table.Cell().BorderBottom(0.5f).Text(user.name);
-                                table.Cell().BorderBottom(0.5f).Text(user.position);
-                                table.Cell().BorderBottom(0.5f).Text(user.records.ToString());
-                                table.Cell().BorderBottom(0.5f).Text(user.status);
+                                table.Cell().Border(0.5f).Text(user.id.ToString());
+                                table.Cell().Border(0.5f).Text(user.name);
+                                table.Cell().Border(0.5f).Text(user.position);
+                                table.Cell().Border(0.5f).Text(user.records.ToString());
+                                table.Cell().Border(0.5f).Text(user.status);
                             }
                         });
 
