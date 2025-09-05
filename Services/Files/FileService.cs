@@ -88,6 +88,8 @@ namespace Services.Files
                 throw new ArgumentException("No hay una lista de usuarios");
             }
 
+            var totalRecords = users.Sum(u => u.records);
+
             var document = Document.Create(container =>
             {
                 container.Page(page =>
@@ -100,40 +102,45 @@ namespace Services.Files
                     page.Header().Text("Listado de Usuarios").Bold().FontSize(18).AlignCenter();
 
                     //Table
-                    page.Content().Table(table =>
+                    page.Content().Column(column =>
                     {
-                        //Definición de columnas
-                        table.ColumnsDefinition(columns =>
+                        column.Item().Table(table =>
                         {
-                            columns.RelativeColumn(2);   //id
-                            columns.RelativeColumn(3);   // Nombre
-                            columns.RelativeColumn(2);   // Cargo
-                            columns.RelativeColumn(2);   // Registro
-                            columns.RelativeColumn(2);   // Status
+                            //Definición de columnas
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(2);   //id
+                                columns.RelativeColumn(3);   // Nombre
+                                columns.RelativeColumn(2);   // Cargo
+                                columns.RelativeColumn(2);   // Registro
+                                columns.RelativeColumn(2);   // Status
+                            });
+
+                            //Cabeceras
+                            table.Header(header =>
+                            {
+                                header.Cell().Background("#257272").Text("Id").FontColor("#fff").Bold();
+                                header.Cell().Background("#257272").Text("Nombre").FontColor("#fff").Bold();
+                                header.Cell().Background("#257272").Text("Cargo").FontColor("#fff").Bold();
+                                header.Cell().Background("#257272").Text("Registros").FontColor("#fff").Bold();
+                                header.Cell().Background("#257272").Text("Status").FontColor("#fff").Bold();
+                            });
+
+                            foreach (var user in users)
+                            {
+                                table.Cell().BorderBottom(0.5f).Text(user.id.ToString());
+                                table.Cell().BorderBottom(0.5f).Text(user.name);
+                                table.Cell().BorderBottom(0.5f).Text(user.position);
+                                table.Cell().BorderBottom(0.5f).Text(user.records.ToString());
+                                table.Cell().BorderBottom(0.5f).Text(user.status);
+                            }
                         });
 
-                        //Cabeceras
-                        table.Header(header =>
-                        {
-                            header.Cell().Text("Id").Bold();
-                            header.Cell().Text("Nombre").Bold();
-                            header.Cell().Text("Cargo").Bold();
-                            header.Cell().Text("Registros").Bold();
-                            header.Cell().Text("Status").Bold();
-                            
-                        });
-
-                        foreach(var user in users)
-                        {
-                            table.Cell().Text(user.id.ToString());
-                            table.Cell().Text(user.name);
-                            table.Cell().Text(user.position);
-                            table.Cell().Text(user.records.ToString());
-                            table.Cell().Text(user.status);
-
-
-                        }
+                       
+                        column.Item().PaddingTop(10).AlignRight().Text($"Total de registros: {totalRecords}")
+                              .Bold().FontSize(12);
                     });
+                    
                     page.Footer().AlignCenter().Text(x =>
                     {
                         x.Span("Página ");

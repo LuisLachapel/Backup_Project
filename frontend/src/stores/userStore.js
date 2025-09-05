@@ -84,54 +84,42 @@ export const useUserStore = defineStore("user", {
                 }
             }
         },
-        async dowloadPdf(startDate, endDate) {
+        async download(type, startDate, endDate){
             try {
-                const response = await axios.get('https://localhost:7108/User/report', {
-                    params: {
-                        startDate: startDate || null,
-                        endDate: endDate || null
-                    },
-                    responseType: "blob"
-                });
+                const endpoint = {
+                pdf: {
+                    url: 'https://localhost:7108/User/report',
+                    extension: '.pdf'
+                },
+                excel: {
+                    url: 'https://localhost:7108/User/excel-report',
+                    extension: '.xlsx'
+                }
+                
+            }
 
-                const today = new Date();
-                const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}.pdf`;
+            const {url, extension} = endpoint[type]
 
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute("download", fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
+            const response = await axios.get(url,{
+                params:{
+                    startDate: startDate || null,
+                    endDate: endDate || null
+                },
+                responseType: "blob"
+            })
+
+            const today = new Date();
+            const fileName = `Listado de usuarios ${today.getDay()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`
+            const fileUrl = window.URL.createObjectURL(response.data)
+            const link = document.createElement("a")
+            link.href = fileUrl;
+            link.setAttribute("download",fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
             } catch (error) {
                 throw new Error("No se pudo generar el reporte de usuarios.");
             }
         },
-        async downloadExcel(startDate, endDate) {
-            try {
-                const response = await axios.get("", {
-                    params: {
-                        startDate: startDate || null,
-                        endDate: endDate || null
-                    },
-                    responseType: 'blob'
-                });
-                 const today = new Date();
-        const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}.xlsx`;
-
-        // response.data ya es un Blob, no envolverlo de nuevo
-        const url = window.URL.createObjectURL(response.data);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-            } catch (error) {
-
-            }
-        }
     }
 })
