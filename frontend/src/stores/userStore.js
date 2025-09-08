@@ -109,7 +109,7 @@ export const useUserStore = defineStore("user", {
             })
 
             const today = new Date();
-            const fileName = `Listado de usuarios ${today.getDay()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`
+            const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`
             const fileUrl = window.URL.createObjectURL(response.data)
             const link = document.createElement("a")
             link.href = fileUrl;

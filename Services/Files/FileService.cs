@@ -28,19 +28,37 @@ namespace Services.Files
             {
                 var sheet = book.Worksheets.Add("Reporte de usuarios");
 
+                
+                string rangeDate = startDate.HasValue && endDate.HasValue
+                    ? $"Reporte desde {startDate.Value:dd/MM/yyyy} hasta {endDate.Value:dd/MM/yyyy}"
+                    : startDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}"
+                    : endDate.HasValue ? $"Reporte hasta {endDate.Value:dd/MM/yyyy}"
+                    : "";
+
+
+              
+                
+
+                if (!string.IsNullOrEmpty(rangeDate))
+                {
+                    sheet.Cell(1, 2).Value = rangeDate;
+                    sheet.Cell(1, 2).Style.Font.Italic = true;
+                    sheet.Cell(1 + 1, 2).Style.Font.FontSize = 11;
+                }
+
                 var tableData = users.Select(u => new
                 {
-                    id = u.id,
+                    u.id,
                     nombre = u.name,
                     cargo = u.position,
                     registros = u.records,
-                    status = u.status,
+                    u.status,
                 });
 
-                var table = sheet.Cell(1,1).InsertTable(tableData, "Usuarios");
+                var table = sheet.Cell(3,1).InsertTable(tableData, "Usuarios");
                 table.ShowAutoFilter = true;
                 table.ShowTotalsRow = true;
-                table.Field("registros").TotalsRowFunction = XLTotalsRowFunction.Sum;
+                //table.Field("registros").TotalsRowFunction = XLTotalsRowFunction.Sum;
 
                 sheet.ColumnsUsed().AdjustToContents();
 
@@ -55,7 +73,7 @@ namespace Services.Files
                 {
                     if(rowIndex % 2 == 0)
                     {
-                        row.Style.Fill.BackgroundColor = XLColor.FromHtml("#339E9E"); //#339E9E
+                        row.Style.Fill.BackgroundColor = XLColor.FromHtml("#339E9E"); 
                     }
                     else
                     {
@@ -66,7 +84,14 @@ namespace Services.Files
                     rowIndex++;
                 }
 
-                
+                int lastRow = table.LastRow().RowNumber();
+                var totalRecords = users.Sum(u => u.records);
+                sheet.Cell(lastRow + 1, 1).Value = $"Total de registros: {totalRecords}";
+                sheet.Cell(lastRow + 1, 1).Style.Font.Bold = true;
+                sheet.Cell(lastRow + 1, 1).Style.Font.FontSize = 12;
+
+
+
                 /*
                 // Encabezado
                 sheet.Cell(1, 1).Value = "Id";

@@ -136,11 +136,15 @@ namespace Persistence.Positions
                         command.Parameters.AddWithValue("@name", position.name);
                         command.Parameters.AddWithValue("@description", position.description);
                         command.ExecuteNonQuery();
-                    } 
+                    }
 
                 }
-                catch (Exception ex)
+                catch (SqlException ex)
                 {
+                    if (ex.Number == 50000)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
                     connection.Close();
                     throw new Exception("Error en insertar el cargo " + ex.Message, ex);
                 }
