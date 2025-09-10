@@ -1,6 +1,4 @@
 ﻿
-using Services.Users.Models;
-using System.Data;
 namespace Services.Files
 {
     public interface IFileService

@@ -43,7 +43,7 @@ namespace Services.Users
             
         }
 
-        public GetAllUserModel GetUserById(int id)
+        public GetAllUserModel? GetUserById(int id)
         {
             var user = _functions.GetById(id);
             if(user == null)
