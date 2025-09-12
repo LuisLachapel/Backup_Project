@@ -4,11 +4,13 @@ import ModalAddUser from './ModalAddUser.vue';
 import { useUserStore } from '@/stores/userStore';
 import ErrorModal from '../ErrorModal.vue';
 import DownloadModal from '../DownloadModal.vue';
+import ShareModal from '@/components/ShareModal.vue';
 
 const show = ref(false)
 const store = useUserStore();
 const showCreateModal = ref(false)
 const showDownlodadModal = ref(false)
+const showShareModal = ref(false)
 const showError = ref(false)
 const errorMessage = ref("")
 
@@ -22,10 +24,6 @@ const CreateUser = async (user) => {
     }
 }
 
-const dowload = async () =>{
-    await store.dowloadPdf()
-}
-
 
 </script>
 
@@ -35,14 +33,16 @@ const dowload = async () =>{
 
     <div @mouseenter="show = true" @mouseleave="show = false" data-dial-init class="fixed bottom-6 end-12 group">
         <div v-if="show" id="speed-dial-menu-text-inside-button" class="flex flex-col items-center  mb-4 space-y-2">
-            <button type="button"
+            
+            <!--Enviar por email-->
+            <button type="button" @click="showShareModal = true" 
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-4 h-4 mx-auto mb-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor" viewBox="0 0 18 18">
                     <path
                         d="M14.419 10.581a3.564 3.564 0 0 0-2.574 1.1l-4.756-2.49a3.54 3.54 0 0 0 .072-.71 3.55 3.55 0 0 0-.043-.428L11.67 6.1a3.56 3.56 0 1 0-.831-2.265c.006.143.02.286.043.428L6.33 6.218a3.573 3.573 0 1 0-.175 4.743l4.756 2.491a3.58 3.58 0 1 0 3.508-2.871Z" />
                 </svg>
-                <span class="block mb-px text-xs font-medium">Share</span>
+                <span class="block mb-px text-xs font-medium">Enviar</span>
             </button>
             <button type="button"
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
@@ -110,6 +110,7 @@ const dowload = async () =>{
     <ModalAddUser :user="null" :show="showCreateModal" @close="showCreateModal = false" @saved="CreateUser" />
     <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
     <DownloadModal :show="showDownlodadModal" @close="showDownlodadModal = false"/>
+    <ShareModal :show="showShareModal" @close="showShareModal = false"/>
 
 
 </template>

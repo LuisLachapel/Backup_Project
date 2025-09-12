@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
 import { usePositionStore } from '@/stores/positionStore';
-import DeletePositionButton from './DeletePositionButton.vue';
 import EditPositionButton from '@/components/position/EditPositionButton.vue'
 
 
