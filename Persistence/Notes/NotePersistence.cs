@@ -1,6 +1,7 @@
 ﻿using Entity;
 using System.Data.SqlClient;
 using System.Data;
+using Persistence.Notes.models;
 
 
 namespace Persistence.Notes
@@ -211,6 +212,52 @@ namespace Persistence.Notes
             }
         }
 
+        public List<NotesByUsers> GetNotesByUsers(DateTime? startDate, DateTime? endDate)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using(SqlCommand command = new SqlCommand("GetNotesByUsers", connection))
+                    {
+                        List<NotesByUsers> notes = new List<NotesByUsers>();
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@startDate", startDate);
+                        command.Parameters.AddWithValue("@endDate", endDate);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int idField = reader.GetOrdinal("id");
+                            int usernameField = reader.GetOrdinal("username");
+                            int positionField = reader.GetOrdinal("cargo");
+                            int titleField = reader.GetOrdinal("title");
+                            int descriptionField = reader.GetOrdinal("description");
+                            int dateField = reader.GetOrdinal("date");
+                            while (reader.Read())
+                            {
+                                NotesByUsers note = new NotesByUsers();
+                                note.id = reader.GetInt32(idField);
+                                note.username = reader.GetString(usernameField);
+                                note.position = reader.GetString(positionField);
+                                note.title = reader.GetString(titleField);
+                                note.description = reader.IsDBNull(descriptionField) ? null : reader.GetString(descriptionField);
+                                note.date = reader.GetDateTime(dateField);
+                                notes.Add(note);
+
+                            }
+                        }
+                        return notes;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    connection.Close();
+                    throw new Exception("Error en obtener el resumen de los datos " + ex.Message, ex);
+                }
+            }
+        }
 
         public void InsertNote(Note note)
         {

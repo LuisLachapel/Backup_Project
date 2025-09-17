@@ -1,4 +1,5 @@
 ﻿using Services.Notes.Models;
+using Persistence.Notes.models;
 
 
 namespace Services.Notes
@@ -13,6 +14,7 @@ namespace Services.Notes
         int Delete(int id);
         List<GetNoteModel> GetNotesByDate(DateTime? startDate, DateTime? endDate);
         DateTime? GetMaxDate();
+        List<NotesByUsers> GetNotesByUsers(DateTime? startDate, DateTime? endDate);  
 
     }
 }

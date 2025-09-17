@@ -2,6 +2,7 @@
 using Services.Notes.Models;
 using Services.Users;
 using Persistence.Notes;
+using Persistence.Notes.models;
 
 namespace Services.Notes
 {
@@ -77,6 +78,12 @@ namespace Services.Notes
 
             }).ToList();
 
+        }
+
+        public List<NotesByUsers> GetNotesByUsers(DateTime? startDate, DateTime? endDate)
+        {
+            var notes = _function.GetNotesByUsers(startDate, endDate);
+            return notes;
         }
 
         public void InsertNote(CreateNoteModel model)

@@ -45,7 +45,7 @@ namespace Persistence.Users
                 try
                 {
                     connection.Open();
-                    using(SqlCommand command = new SqlCommand("userReport", connection))
+                    using(SqlCommand command = new SqlCommand("getReportUserNotes", connection))
                     {
                         List<UserNotesSummary> notes = new List<UserNotesSummary>();
                         command.CommandType = CommandType.StoredProcedure;

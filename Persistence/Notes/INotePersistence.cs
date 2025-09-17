@@ -1,4 +1,5 @@
 ﻿using Entity;
+using Persistence.Notes.models;
 namespace Persistence.Notes
 {
     public interface INotePersistence
@@ -13,6 +14,7 @@ namespace Persistence.Notes
         List<Note> GetNotesByDate(DateTime? startDate, DateTime? endDate);
 
         DateTime? GetMaxDate();
+        List<NotesByUsers> GetNotesByUsers(DateTime? startDate, DateTime? endDate);
 
     }
 }
