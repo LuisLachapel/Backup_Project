@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { watch } from "vue";
 
 const props = defineProps({
   show: { type: Boolean, default: false }
@@ -17,6 +18,19 @@ const files = ref([]);
 const handleFiles = (event) => {
   files.value = Array.from(event.target.files);
 };
+
+const removeFiles = (index) =>{
+  const inputFile = document.getElementById("dropzone-file");
+  const dataFiles = new DataTransfer();
+
+  files.value.forEach((file,i) => { //Recorre los archivos agregados por el usuario
+    if(i !== index) dataFiles.items.add(file);// aqui se copian todos los archivos menos el que recibes por parametros.
+
+  });
+
+   inputFile.files = dataFiles.files; //se copian los archivos del datafiles sin el archivo a eliminar en el input
+  files.value = Array.from(dataFiles.files); // se actuliza la variables files con los archivos no eliminados
+}
 
 // Enviar correo
 const sendEmail = async () => {
@@ -39,12 +53,31 @@ const sendEmail = async () => {
     });
 
     alert("Correo enviado correctamente ✅");
+    
     emit("close");
   } catch (error) {
     console.error(error);
     alert("Error al enviar el correo ❌");
   }
 };
+
+const reset = () =>{
+  to.value = "",
+  subject.value = "";
+  body.value = "";
+  files.value = []
+  const inputFile = document.getElementById("id");
+  if(inputFile) inputFile.value = "";
+
+}
+
+watch(
+  () => props.show,
+(isShowed) =>{
+  if(!isShowed){
+    reset();
+  }
+})
 </script>
 
 <template>
@@ -82,6 +115,7 @@ const sendEmail = async () => {
 
         <!-- Header con inputs -->
         <div class="flex flex-col gap-2 p-4 border-b border-gray-200 pt-6">
+          <h2 class="font-medium">Email</h2>
           <div>
             <label class="block mb-2 text-sm font-medium">Para:</label>
             <input
@@ -166,9 +200,15 @@ const sendEmail = async () => {
             <li
               v-for="(file, index) in files"
               :key="index"
-              class="text-gray-700"
+              class="flex justify-between items-center text-gray-700 border p-2 rounded mb-1"
             >
-              📎 {{ file.name }} ({{ (file.size / 1024).toFixed(1) }} KB)
+              <span>📎 {{ file.name }} ({{ (file.size / 1024).toFixed(1) }} KB)</span>
+              <button
+                @click="removeFiles(index)"
+                class="ml-2 text-red-500 hover:text-red-700"
+              >
+                ❌
+              </button>
             </li>
           </ul>
         </div>
