@@ -137,7 +137,7 @@ namespace Services.Files
 
             var totalRecords = users.Sum(u => u.records);
 
-            string rangeDate = startDate.HasValue && endDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy} hasta  {endDate.Value:dd/MM/yyyy}" 
+            string rangeDate = startDate.HasValue && endDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}  hasta  {endDate.Value:dd/MM/yyyy}" 
                 : startDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}": endDate.HasValue ? $" Reporte hasta {endDate.Value:dd/MM/yyyy}" : "";
 
 
@@ -151,17 +151,66 @@ namespace Services.Files
                     page.DefaultTextStyle(x => x.FontSize(12));
 
                     // Header
-                    page.Header().Text("Listado de Usuarios").Bold().FontSize(18).AlignCenter();
+                    page.Header().Row(row =>
+                    {
+                        row.ConstantItem(140).Height(60).Placeholder();
+                        row.RelativeItem().PaddingTop(15).PaddingLeft(30).Column(column =>
+                        {
+                            column.Item().AlignCenter().Text("Backup System").Bold().FontSize(22);
+                        });
+
+                        row.ConstantItem(200).AlignRight().Column(column =>
+                        {
+                            column.Item().Text($"Reporte del {DateTime.Now:dd/MM/yyyy}").Italic().FontSize(11).AlignRight();
+                        });
+
+
+                    });
 
                     //Table
-                    page.Content().Column(column =>
+                    page.Content().PaddingTop(20).Column(column =>
                     {
+                        column.Item().Row(row => {
+                            row.RelativeItem().Column(columnHeader =>
+                            {
+                                columnHeader.Item().Text("Listado de usuarios").FontSize(15).Bold();
+                            });
+                        
+                        });
+                        // Línea con la fecha de generación del reporte
+                       
 
-                        if (!string.IsNullOrEmpty(rangeDate))
+                        // Si existe startDate → mostramos "desde ..."
+                        if (startDate.HasValue)
                         {
-                            column.Item().AlignRight().Text(rangeDate).Italic().FontSize(11);
-
+                            column.Item().Row(row => {
+                                row.RelativeItem().Column(columnHeader =>
+                                {
+                                    columnHeader.Item()
+                                        .Text($"desde {startDate.Value:dd/MM/yyyy}")
+                                        .Italic()
+                                        .FontSize(11)
+                                        .AlignRight();
+                                });
+                            });
                         }
+
+                        // Si existe endDate → mostramos "hasta ..."
+                        if (endDate.HasValue)
+                        {
+                            column.Item().Row(row => {
+                                row.RelativeItem().Column(columnHeader =>
+                                {
+                                    columnHeader.Item()
+                                        .Text($"hasta {endDate.Value:dd/MM/yyyy}")
+                                        .Italic()
+                                        .FontSize(11)
+                                        .AlignRight();
+                                });
+                            });
+                        }
+
+
                         column.Item().PaddingVertical(10);
                         
                         column.Item().Table(table =>
@@ -180,6 +229,7 @@ namespace Services.Files
                             //Cabeceras
                             table.Header(header =>
                             {
+                               
                                 header.Cell().Background("#257272").Text("Id").FontColor("#fff").Bold();
                                 header.Cell().Background("#257272").Text("Nombre").FontColor("#fff").Bold();
                                 header.Cell().Background("#257272").Text("Cargo").FontColor("#fff").Bold();
@@ -187,27 +237,35 @@ namespace Services.Files
                                 header.Cell().Background("#257272").Text("Status").FontColor("#fff").Bold();
                             });
 
+                            int rowIndex = 0;
                             foreach (var user in users)
                             {
-                                table.Cell().Border(0.5f).Text(user.id.ToString());
-                                table.Cell().Border(0.5f).Text(user.name);
-                                table.Cell().Border(0.5f).Text(user.position);
-                                table.Cell().Border(0.5f).Text(user.records.ToString());
-                                table.Cell().Border(0.5f).Text(user.status);
+                                var backgroundColor = rowIndex % 2 == 0 ? "#F5F5F5" : "#FFFFFF"; // Gris claro para pares
+
+                                table.Cell().Background(backgroundColor).Text(user.id.ToString());
+                                table.Cell().Background(backgroundColor).Text(user.name);
+                                table.Cell().Background(backgroundColor).Text(user.position);
+                                table.Cell().Background(backgroundColor).Text(user.records.ToString());
+                                table.Cell().Background(backgroundColor).Text(user.status);
+
+                                rowIndex++;
                             }
+                            //table.Cell().ColumnSpan(5).PaddingVertical(5).BorderBottom(1).BorderColor(Colors.Black);
+                            //table.Cell().ColumnSpan(4).AlignRight().Text($"Total de registros:").Bold();
+                            //table.Cell().AlignRight().Text(totalRecords.ToString());
                         });
 
-                       
+
                         column.Item().PaddingTop(10).AlignRight().Text($"Total de registros: {totalRecords}")
                               .Bold().FontSize(12);
                     });
                     
-                    page.Footer().AlignCenter().Text(x =>
+                    page.Footer().AlignRight().Text(x =>
                     {
-                        x.Span("Página ");
-                        x.CurrentPageNumber();
-                        x.Span(" de ");
-                        x.TotalPages();
+                        x.Span("Página ").FontSize(10);
+                        x.CurrentPageNumber().FontSize(10);
+                        x.Span(" de ").FontSize(10);
+                        x.TotalPages().FontSize(10);
                     });
                 });
             });
