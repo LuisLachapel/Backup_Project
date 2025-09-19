@@ -92,7 +92,7 @@ export const useUserStore = defineStore("user", {
                     extension: '.pdf'
                 },
                 excel: {
-                    url: 'https://localhost:7108/User/excel-report',
+                    url: 'https://localhost:7108/User/excel-user-report',
                     extension: '.xlsx'
                 }
                 

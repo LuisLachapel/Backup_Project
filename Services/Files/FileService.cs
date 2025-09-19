@@ -3,6 +3,8 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using ClosedXML.Excel;
+using Services.Notes;
+using Services.Notes.Models;
 
 
 namespace Services.Files
@@ -10,14 +12,18 @@ namespace Services.Files
     public class FileService : IFileService
     {
         private readonly IUserService _userService;
+        private readonly INoteService _noteService;
 
-        public FileService(IUserService userService)
+        
+        public FileService(IUserService userService,INoteService noteService)
         {
             _userService = userService;
+            _noteService = noteService;
             QuestPDF.Settings.License = LicenseType.Community;
         }
 
-        public byte[] ExcelTable(DateTime? startDate, DateTime? endDate)
+        //Usuarios
+        public byte[] ExcelUserReport(DateTime? startDate, DateTime? endDate)
         {
             var users = _userService.GetUserNotesSummaries(startDate, endDate);
             if (users == null || !users.Any())
@@ -28,16 +34,14 @@ namespace Services.Files
             {
                 var sheet = book.Worksheets.Add("Reporte de usuarios");
 
-                
-                string rangeDate = startDate.HasValue && endDate.HasValue
-                    ? $"Reporte desde {startDate.Value:dd/MM/yyyy} hasta {endDate.Value:dd/MM/yyyy}"
-                    : startDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}"
-                    : endDate.HasValue ? $"Reporte hasta {endDate.Value:dd/MM/yyyy}"
-                    : "";
+
+                var rangeDate = startDate.HasValue && endDate.HasValue ? $"Periodo: {startDate.Value:dd/M/yyyy} - {endDate.Value:dd/M/yyyy}" :
+                startDate.HasValue ? $"Periodo desde: {startDate.Value:dd/M/yyyy} hasta {DateTime.Now:dd/M/yyyy}" :
+                endDate.HasValue ? $" Registros hasta: {endDate.Value.ToString("dd/M/yyyy")}" : "";
 
 
-              
-                
+
+
 
                 if (!string.IsNullOrEmpty(rangeDate))
                 {
@@ -137,8 +141,9 @@ namespace Services.Files
 
             var totalRecords = users.Sum(u => u.records);
 
-            string rangeDate = startDate.HasValue && endDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}  hasta  {endDate.Value:dd/MM/yyyy}" 
-                : startDate.HasValue ? $"Reporte desde {startDate.Value:dd/MM/yyyy}": endDate.HasValue ? $" Reporte hasta {endDate.Value:dd/MM/yyyy}" : "";
+            var rangeDate = startDate.HasValue && endDate.HasValue ? $"Periodo: {startDate.Value:dd/M/yyyy} - {endDate.Value:dd/M/yyyy}" :
+                startDate.HasValue ? $"Periodo desde: {startDate.Value:dd/M/yyyy} hasta {DateTime.Now:dd/M/yyyy}" :
+                endDate.HasValue ? $" Registros hasta: {endDate.Value.ToString("dd/M/yyyy")}" : "";
 
 
 
@@ -178,35 +183,14 @@ namespace Services.Files
                         
                         });
                         // Línea con la fecha de generación del reporte
-                       
-
-                        // Si existe startDate → mostramos "desde ..."
-                        if (startDate.HasValue)
+                        if (!string.IsNullOrEmpty(rangeDate))
                         {
                             column.Item().Row(row => {
-                                row.RelativeItem().Column(columnHeader =>
-                                {
-                                    columnHeader.Item()
-                                        .Text($"desde {startDate.Value:dd/MM/yyyy}")
-                                        .Italic()
-                                        .FontSize(11)
-                                        .AlignRight();
-                                });
-                            });
-                        }
+                                row.RelativeItem().Column(columnHeader => {
+                                    columnHeader.Item().Text(rangeDate).FontSize(10);
 
-                        // Si existe endDate → mostramos "hasta ..."
-                        if (endDate.HasValue)
-                        {
-                            column.Item().Row(row => {
-                                row.RelativeItem().Column(columnHeader =>
-                                {
-                                    columnHeader.Item()
-                                        .Text($"hasta {endDate.Value:dd/MM/yyyy}")
-                                        .Italic()
-                                        .FontSize(11)
-                                        .AlignRight();
                                 });
+
                             });
                         }
 
@@ -219,11 +203,11 @@ namespace Services.Files
                             //Definición de columnas
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.RelativeColumn(1);   //id
-                                columns.RelativeColumn(3);   // Nombre
-                                columns.RelativeColumn(2);   // Cargo
-                                columns.RelativeColumn();   // Registro
-                                columns.RelativeColumn(2);   // Status
+                                columns.ConstantColumn(40);   //id
+                                columns.RelativeColumn();   // Nombre
+                                columns.RelativeColumn();   // Cargo
+                                columns.ConstantColumn(65);   // Registro
+                                columns.ConstantColumn(50);   // Status
                             });
 
                             //Cabeceras
@@ -272,6 +256,149 @@ namespace Services.Files
 
             return document.GeneratePdf();
 
+        }
+
+
+        //Notas
+        public byte[] ExcelNoteReport(DateTime? startDate, DateTime? endDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] NoteReport(DateTime? startDate, DateTime? endDate)
+        {
+            var notes = _noteService.GetNotesByUsers(startDate, endDate);
+            if (notes == null || !notes.Any())
+            {
+                throw new ArgumentException("No hay una lista de usuarios");
+            }
+
+            var groupedUser = notes.GroupBy(n => new { n.id, n.username, n.position }).Select(group => new UserNoteModel
+            {
+                id = group.Key.id,
+                username = group.Key.username,
+                position = group.Key.position,
+                notes = group.Select(n => new UserNoteModel.Note
+                {
+                    title = n.title,
+                    description = n.description,
+                    date = n.date,
+                }).ToList()
+            }).ToList();
+
+            int totalRecords = notes.Count;
+
+            var rangeDate = startDate.HasValue && endDate.HasValue ? $"Periodo: {startDate.Value:dd/M/yyyy} - {endDate.Value:dd/M/yyyy}" : 
+                startDate.HasValue? $"Periodo desde: {startDate.Value:dd/M/yyyy} hasta {DateTime.Now:dd/M/yyyy}" :
+                endDate.HasValue ? $" Registros hasta: {endDate.Value.ToString("dd/M/yyyy")}" : "";
+
+            var document = Document.Create(container =>
+            {
+
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(30);
+
+                    //Header
+                    page.Header().Row(row => {
+                        row.ConstantItem(140).Height(60).Placeholder();
+                        row.RelativeItem().PaddingTop(15).PaddingLeft(30).Column(column =>
+                        {
+                            column.Item().AlignCenter().Text("Backup System").Bold().FontSize(22);
+                        });
+
+                        row.ConstantItem(200).AlignRight().Column(column =>
+                        {
+                            column.Item().Text($"Reporte del {DateTime.Now:dd/MM/yyyy}").Italic().FontSize(11).AlignRight();
+                        });
+
+                    });
+
+
+                    //Contenido
+                    page.Content().PaddingTop(20).Column(column =>
+                    {
+                        column.Item().Row(row => {
+                            row.RelativeItem().Column(columnHeader =>
+                            {
+                                columnHeader.Item().Text("Listado de notas").FontSize(15).Bold();
+                            });
+
+                        });
+
+                        if (!string.IsNullOrEmpty(rangeDate))
+                        {
+                            column.Item().Row(row => {
+                                row.RelativeItem().Column(columnHeader => {
+                                    columnHeader.Item().Text(rangeDate).FontSize(10);
+                                
+                                });
+                                
+                            });
+                        }
+                        
+
+                        column.Item().PaddingVertical(10);
+
+                        foreach (var user in groupedUser)
+                        {
+                            // Usuario header
+                            column.Item().Text($"{user.username} ({user.position})")
+                                .SemiBold()
+                                .FontSize(13)
+                                .Underline();
+
+                            // Tabla de notas de este usuario
+                            column.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(130); // titulo
+                                    columns.ConstantColumn(300); // descripción
+                                    columns.ConstantColumn(100);  // fecha
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Background("#257272").Text("Título").FontColor("#fff").Bold();
+                                    header.Cell().Background("#257272").Text("Descripción").FontColor("#fff").Bold();
+                                    header.Cell().Background("#257272").Text("Fecha").FontColor("#fff").Bold();
+                                });
+
+                                int rowIndex = 0;
+                                foreach (var note in user.notes)
+                                {
+                                    var backgroundColor = rowIndex % 2 == 0 ? "#F5F5F5" : "#FFFFFF";
+                                    table.Cell().Background(backgroundColor).Text(note.title);
+                                    table.Cell().Background(backgroundColor).Text(note.description ?? "");
+                                    table.Cell().Background(backgroundColor).Text(note.date.ToString("dd/MM/yyyy"));
+                                    rowIndex++;
+                                }
+                            });
+
+                            column.Item().PaddingTop(5).AlignRight().Text($"Total de registros de {user.username}: {user.notes.Count}").FontSize(11).Italic();
+
+                            // separador entre usuarios
+                            column.Item().PaddingVertical(15).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        }
+
+                        column.Item().PaddingTop(10).AlignRight().Text($"Total de registros: {totalRecords}")
+                              .Bold().FontSize(12);
+                    });
+
+
+                    page.Footer().AlignRight().Text(footer => {
+                        footer.Span("Pagina ").FontSize(10);
+                        footer.CurrentPageNumber().FontSize(10);
+                        footer.Span(" de ").FontSize(10);
+                        footer.TotalPages().FontSize(10);
+
+                    
+                    });
+                });
+            });
+            return document.GeneratePdf();
         }
     }
 }
