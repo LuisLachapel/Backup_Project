@@ -39,16 +39,20 @@ namespace Services.Files
                 startDate.HasValue ? $"Periodo desde: {startDate.Value:dd/M/yyyy} hasta {DateTime.Now:dd/M/yyyy}" :
                 endDate.HasValue ? $" Registros hasta: {endDate.Value.ToString("dd/M/yyyy")}" : "";
 
+                sheet.Cell(1, 1).Value = "Backup System";
+                sheet.Cell(1, 1).Style.Font.Bold = true;
+                sheet.Cell(1, 1).Style.Font.FontSize = 18;
 
-
-
+                sheet.Cell(2, 1).Value = $"Reporte del {DateTime.Now:dd/MM/yyyy}";
+                sheet.Cell(2, 1).Style.Font.Italic = true;
 
                 if (!string.IsNullOrEmpty(rangeDate))
                 {
-                    sheet.Cell(1, 2).Value = rangeDate;
-                    sheet.Cell(1, 2).Style.Font.Italic = true;
-                    sheet.Cell(1 + 1, 2).Style.Font.FontSize = 11;
+                    sheet.Cell(3, 1).Value = rangeDate;
+                    sheet.Cell(3, 1).Style.Font.Italic = true;
+                    sheet.Cell(3, 1).Style.Font.FontSize = 11;
                 }
+
 
                 var tableData = users.Select(u => new
                 {
@@ -59,7 +63,7 @@ namespace Services.Files
                     u.status,
                 });
 
-                var table = sheet.Cell(3,1).InsertTable(tableData, "Usuarios");
+                var table = sheet.Cell(5,1).InsertTable(tableData, "Usuarios");
                 table.ShowAutoFilter = true;
                 table.ShowTotalsRow = true;
                 //table.Field("registros").TotalsRowFunction = XLTotalsRowFunction.Sum;
@@ -262,7 +266,114 @@ namespace Services.Files
         //Notas
         public byte[] ExcelNoteReport(DateTime? startDate, DateTime? endDate)
         {
-            throw new NotImplementedException();
+            var notes = _noteService.GetNotesByUsers(startDate, endDate);
+            if(notes == null || !notes.Any())
+            {
+                throw new ArgumentException("No hay notas disponibles");
+
+            }
+
+            int totalRecords = notes.Count();
+
+            var groupedUser = notes.GroupBy(n => new { n.id, n.username, n.position }).Select(group => new UserNoteModel
+            {
+                id = group.Key.id,
+                username = group.Key.username,
+                position = group.Key.position,
+                notes = group.Select(n => new UserNoteModel.Note
+                {
+                    title = n.title,
+                    description = n.description,
+                    date = n.date,
+                }).ToList()
+            }).ToList();
+
+            var rangeDate = startDate.HasValue && endDate.HasValue ? $"Periodo: {startDate.Value:dd/M/yyyy} - {endDate.Value:dd/M/yyyy}" :
+                startDate.HasValue ? $"Periodo desde: {startDate.Value:dd/M/yyyy} hasta {DateTime.Now:dd/M/yyyy}" :
+                endDate.HasValue ? $" Registros hasta: {endDate.Value.ToString("dd/M/yyyy")}" : "";
+
+            using (var book = new XLWorkbook())
+            {
+                var sheet = book.Worksheets.Add("Notas");
+
+                // Encabezado
+                sheet.Cell(1, 1).Value = "Backup System";
+                sheet.Cell(1, 1).Style.Font.Bold = true;
+                sheet.Cell(1, 1).Style.Font.FontSize = 18;
+
+                sheet.Cell(2, 1).Value = $"Reporte del {DateTime.Now:dd/MM/yyyy}";
+                sheet.Cell(2, 1).Style.Font.Italic = true;
+
+                if (!string.IsNullOrEmpty(rangeDate))
+                {
+                    sheet.Cell(3, 1).Value = rangeDate;
+                    sheet.Cell(3, 1).Style.Font.Italic = true;
+                    sheet.Cell(3, 1).Style.Font.FontSize = 11;
+                }
+
+                int currentRow = 5;
+
+                foreach (var user in groupedUser)
+                {
+                    // Nombre de usuario
+                    sheet.Cell(currentRow, 1).Value = $"{user.username} ({user.position})";
+                    sheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                    sheet.Cell(currentRow, 1).Style.Font.FontSize = 14;
+                    currentRow += 2;
+
+                    // Cabecera de la tabla
+                    sheet.Cell(currentRow, 1).Value = "Título";
+                    sheet.Cell(currentRow, 2).Value = "Descripción";
+                    sheet.Cell(currentRow, 3).Value = "Fecha";
+
+                    var headerRange = sheet.Range(currentRow, 1, currentRow, 3);
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#257272");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Font.Bold = true;
+
+                    headerRange.SetAutoFilter();
+
+                    currentRow++;
+
+                    // Filas de notas
+                    int rowIndex = 0;
+                    foreach (var note in user.notes)
+                    {
+                        sheet.Cell(currentRow, 1).Value = note.title;
+                        sheet.Cell(currentRow, 2).Value = note.description ?? "";
+                        sheet.Cell(currentRow, 3).Value = note.date.ToString("dd/MM/yyyy");
+
+                        var rowRange = sheet.Range(currentRow, 1, currentRow, 3);
+                        rowRange.Style.Fill.BackgroundColor = rowIndex % 2 == 0
+                            ? XLColor.FromHtml("#F5F5F5")
+                            : XLColor.White;
+
+                        currentRow++;
+                        rowIndex++;
+                    }
+
+
+
+                    // Total de registros por usuario
+                    sheet.Cell(currentRow, 1).Value = $"Total de registros de {user.username}: {user.notes.Count}";
+                    sheet.Cell(currentRow, 1).Style.Font.Italic = true;
+                    currentRow += 3;
+                }
+
+                // Total global
+                sheet.Cell(currentRow, 1).Value = $"Total de registros: {totalRecords}";
+                sheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                sheet.Cell(currentRow, 1).Style.Font.FontSize = 12;
+
+                // Ajustar tamaños
+                sheet.ColumnsUsed().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    book.SaveAs(stream);
+                    return stream.ToArray();
+                }
+            }
         }
 
         public byte[] NoteReport(DateTime? startDate, DateTime? endDate)
