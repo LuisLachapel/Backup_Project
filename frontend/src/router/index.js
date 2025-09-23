@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useSessionStore } from '@/stores/sessionStore'
 import Home from '@/views/Home.vue'
 
 
@@ -9,6 +10,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import("@/views/Home.vue")
+    },
+    {
+      path: '/auth',
+      name: 'auth',
+      component: () =>import("@/views/Auth.vue")
+
     },
     {
       path: '/users',
@@ -26,6 +33,15 @@ const router = createRouter({
     }
     
   ],
+})
+
+router.beforeEach((to,from,next) =>{
+  const session = useSessionStore()
+  if(!session.currentUser && to.name !== "auth"){
+    next({name: "auth"});
+  }else{
+    next();
+  }
 })
 
 export default router

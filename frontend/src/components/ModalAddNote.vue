@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from "vue"
 import { useNoteStore } from "@/stores/noteStore"
+import { useSessionStore } from "@/stores/sessionStore"
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -9,7 +10,8 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "saved"])
 
-const noteStore = useNoteStore()
+const noteStore = useNoteStore();
+const session = useSessionStore();
 
 const title = ref("")
 const description = ref("")
@@ -46,8 +48,8 @@ const saveNote = () => {
     const data = {
       id: props.note.id,
       title: title.value,
-      description: description.value,
-      userId: userId.value 
+      description: description.value
+      
     }
     emit("saved", data)
   } else {
@@ -55,7 +57,7 @@ const saveNote = () => {
     const data = {
       title: title.value,
       description: description.value,
-      userId: userId.value 
+      userId: session.currentUser.id 
     }
     emit("saved", data)
   }
@@ -103,23 +105,6 @@ const close = () => {
                   maxlength="20"
                 />
                 <p class="text-sm text-gray-500">{{ title.length }}/20</p>
-              </div>
-
-              <div>
-                <label class="block mb-2 text-sm font-medium">Asignar a usuario</label>
-                <select
-                  v-model="userId"
-                  class="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm  border rounded-lg"
-                >
-                  <option disabled value="">Seleccione un usuario</option>
-                  <option
-                    v-for="user in noteStore.users"
-                    :key="user.id"
-                    :value="user.id"
-                  >
-                    {{ user.name }}
-                  </option>
-                </select>
               </div>
 
               <div>
