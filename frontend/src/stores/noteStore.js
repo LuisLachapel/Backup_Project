@@ -73,6 +73,56 @@ export const useNoteStore = defineStore("note", {
                     throw new Error("Error al conectar con el servidor");
                 }
             }
+        },
+        async getSummary(startDate, endDate){
+            try {
+                const {data} = axios.get("https://localhost:7108/Note/summary",{
+                params: {startDate, endDate}
+                
+            })
+            return data;
+            } catch (error) {
+                 if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Error desconocido");
+                } else {
+                    throw new Error("Error al conectar con el servidor");
+                }
+            }
+        },
+        async download(type, startDate, endDate){
+            try {
+                const endpoint = {
+                pdf:{
+                    url: 'https://localhost:7108/Note/note-report',
+                    extension: '.pdf'
+                },
+                excel:{
+                    url: 'https://localhost:7108/Note/excel-report',
+                    extension: '.xlsx'
+                }
+            }
+
+            const {url, extension} = endpoint[type]
+            const response = await axios.get(url,{
+                params:{
+                    startDate: startDate || null,
+                    endDate: endDate || null
+                },
+                responseType: "blob"
+            });
+
+            const today = new Date()
+            const fileName = `Listado de notas ${today.getDay()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`;
+            const fileUrl = window.URL.createObjectURL(response.data);
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.setAttribute('download',fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            } catch (error) {
+                throw new Error("No se pudo generar el reporte de notas.");
+            }
         }
 
     },

@@ -32,7 +32,7 @@ const CreateUser = async (user) => {
 
 
     <div @mouseenter="show = true" @mouseleave="show = false" data-dial-init class="fixed bottom-6 end-12 group">
-        <div v-if="show" id="speed-dial-menu-text-inside-button" class="flex flex-col items-center  mb-4 space-y-2">
+        <div v-if="show"class="flex flex-col items-center  mb-4 space-y-2">
             
             <!--Enviar por email-->
             <button type="button" @click="showShareModal = true" 
@@ -95,7 +95,7 @@ const CreateUser = async (user) => {
 
 
         </div>
-        <button type="button" data-dial-toggle="speed-dial-menu-text-inside-button"
+        <button type="button"
             aria-controls="speed-dial-menu-text-inside-button" aria-expanded="false"
             class="flex items-center justify-center text-white bg-blue-700 rounded-full w-16 h-16 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
             <svg class="w-5 h-5 transition-transform group-hover:rotate-45" aria-hidden="true"
