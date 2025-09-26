@@ -136,7 +136,7 @@ const resetFilter = async () => {
                             <thead class="bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200">
                                 <tr>
                                     <th class="px-4 py-2 border">Nombre</th>
-                                    <th class="px-4 py-2 border">Posición</th>
+                                    <th class="px-4 py-2 border">Cargo</th>
                                     <th class="px-4 py-2 border">Registros</th>
                                 </tr>
                             </thead>

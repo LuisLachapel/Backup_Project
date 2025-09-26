@@ -76,7 +76,7 @@ export const useNoteStore = defineStore("note", {
         },
         async getSummary(startDate, endDate){
             try {
-                const {data} = axios.get("https://localhost:7108/Note/summary",{
+                const {data} = await axios.get("https://localhost:7108/Note/summary",{
                 params: {startDate, endDate}
                 
             })
