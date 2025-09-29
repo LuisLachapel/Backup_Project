@@ -64,7 +64,7 @@ namespace Persistence.Notes
                                 Note note = new Note();
                                 note.id = reader.GetInt32(idField);
                                 note.title = reader.GetString(titleField);
-                                note.description = reader.IsDBNull(descriptionField)? null: reader.GetString(descriptionField);
+                                note.description = reader.IsDBNull(descriptionField)? string.Empty: reader.GetString(descriptionField);
                                 note.date = reader.IsDBNull(dateField) ? DateTime.MinValue : reader.GetDateTime(dateField);
                                 note.userId = reader.GetInt32(userIdField);
                                 note.user = new User
@@ -193,7 +193,7 @@ namespace Persistence.Notes
                                 Note note = new Note();
                                 note.id = reader.GetInt32(idField);
                                 note.title = reader.GetString(titleField);
-                                note.description = reader.IsDBNull(descriptionField) ? null : reader.GetString(descriptionField);
+                                note.description = reader.IsDBNull(descriptionField) ? string.Empty : reader.GetString(descriptionField);
                                 note.date = reader.GetDateTime(dateField);
                                 notes.Add(note);
 

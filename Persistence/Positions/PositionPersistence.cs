@@ -65,7 +65,7 @@ namespace Persistence.Positions
                                 Position position = new Position();
                                 position.id = reader.GetInt32(idField);
                                 position.name = reader.GetString(nameField);
-                                position.description = reader.IsDBNull(descriptionField) ? null : reader.GetString(descriptionField);
+                                position.description = reader.IsDBNull(descriptionField) ? string.Empty : reader.GetString(descriptionField);
                                 positions.Add(position);
                             }
                         }

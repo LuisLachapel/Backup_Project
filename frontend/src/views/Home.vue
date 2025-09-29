@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useNoteStore } from '@/stores/noteStore';
 import ErrorModal from '@/components/ErrorModal.vue';
 import CardNote from '@/components/note/CardNote.vue';
-import OpenMenuButton from '@/components/note/OpenMenuButton.vue';
+import FABNote from '@/components/note/FABNote.vue';
 
 // revisar: https://flowbite.com/docs/components/speed-dial/
 
@@ -46,7 +46,7 @@ const resetFilter = async () => {
 </script>
 
 <template>
-  <div class="py-4 shadow-md">
+  <div class="py-4 ">
     <header class="container mx-auto px-2.5 flex items-center justify-between ">
 
       
@@ -91,6 +91,6 @@ const resetFilter = async () => {
       </section>
   </main>
 
-  <OpenMenuButton/>
+  <FABNote/>
 </template>
 
