@@ -30,6 +30,11 @@ const router = createRouter({
       path: '/download',
       name: 'download',
       component: () =>import('@/components/DownloadModal.vue')
+    },
+    {
+      path: '/permission',
+      name: 'permission',
+      component: () =>import('@/views/Permission.vue')
     }
     
   ],

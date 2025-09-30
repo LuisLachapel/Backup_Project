@@ -82,5 +82,35 @@ namespace Persistence.Permissions
                 }
             }
         }
+
+        public void UpdatePermission(Permission permission)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                try
+                {
+                    using (SqlCommand command = new SqlCommand("updatePermission", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@id", permission.id);
+                        command.Parameters.AddWithValue("@name", permission.name);
+                        command.Parameters.AddWithValue("@code", permission.code);
+                        command.Parameters.AddWithValue("@description", permission.description);
+                        command.ExecuteNonQuery();
+                    }
+
+                }
+                catch (SqlException ex)
+                {
+                    if(ex.Number == 50000)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
+                    connection.Close();
+                    throw new Exception("error en editar permisos " + ex.Message, ex);
+                }
+            }
+        }
     }
 }

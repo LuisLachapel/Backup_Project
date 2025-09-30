@@ -241,7 +241,7 @@ namespace Persistence.Notes
                                 note.username = reader.GetString(usernameField);
                                 note.position = reader.GetString(positionField);
                                 note.title = reader.GetString(titleField);
-                                note.description = reader.IsDBNull(descriptionField) ? null : reader.GetString(descriptionField);
+                                note.description = reader.IsDBNull(descriptionField) ? string.Empty : reader.GetString(descriptionField);
                                 note.date = reader.GetDateTime(dateField);
                                 notes.Add(note);
 

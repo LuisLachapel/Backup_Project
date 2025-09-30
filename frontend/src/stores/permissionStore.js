@@ -7,7 +7,7 @@ export const usePermissionStore = defineStore("permission",{
     }),
     actions: {
         async getPermissions(){
-            const {data} = axios.get("https://localhost:7108/Permission/get-all")
+            const {data} = await axios.get("https://localhost:7108/Permission/get-all")
             this.permissions = data
         },
         async insert(permission){

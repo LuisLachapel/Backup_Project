@@ -30,5 +30,17 @@ namespace Services.Permissions
             _function.InsertPermission(permission);
 
         }
+
+        public void Update(int id, CreatePermissionModel model)
+        {
+            var permission = new Permission
+            {
+                id = id,
+                name = model.name,
+                code = model.code,
+                description = model.description
+            };
+            _function.UpdatePermission(permission);
+        }
     }
 }
