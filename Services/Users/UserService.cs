@@ -2,7 +2,6 @@
 using Persistence.Users;
 using Services.Positions;
 using Services.Users.Models;
-using System.ComponentModel.DataAnnotations;
 namespace Services.Users
 {
     public class UserService : IUserService

@@ -1,6 +1,6 @@
 <script setup>
 import TablePermission from '@/components/permission/TablePermission.vue';
-import createButton from '@/components/permission/createButton.vue';
+import createButton from '@/components/permission/CreateButton.vue';
 </script>
 
 

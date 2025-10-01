@@ -5,9 +5,10 @@ namespace Services.Permissions
     public interface IPermissionService
     {
         void Insert(CreatePermissionModel model);
-        void Update(int id, CreatePermissionModel model);
+        void Update(int id, UpdatePermissionModel model);
 
         List<Permission> GetAll();
+        Permission GetById(int id);
 
     }
 }

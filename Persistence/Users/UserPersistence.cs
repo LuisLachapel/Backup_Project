@@ -130,7 +130,7 @@ namespace Persistence.Users
             return users;
         }
 
-        public User GetById(int id)
+        public User? GetById(int id)
         {
             User? user = null;
             using(SqlConnection connection = new SqlConnection(_connectionString))

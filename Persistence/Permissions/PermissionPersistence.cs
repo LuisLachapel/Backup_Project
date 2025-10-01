@@ -14,6 +14,51 @@ namespace Persistence.Permissions
             _connectionString = connectionString;
         }
 
+        public Permission GetPermission(int id)
+        {
+            Permission permission = new Permission();
+           using(SqlConnection connection = new SqlConnection(_connectionString))
+           {
+                connection.Open();
+                try
+                {
+                    using(SqlCommand command = new SqlCommand("getPermissionById", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@id", id);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int idField = reader.GetOrdinal("id");
+                            int nameField = reader.GetOrdinal("name");
+                            int codeField = reader.GetOrdinal("code");
+                            int descriptionField = reader.GetOrdinal("description");
+                            int activeField = reader.GetOrdinal("active");
+                            while (reader.Read())
+                            {
+                                permission.id = reader.GetInt32(idField);
+                                permission.name = reader.GetString(nameField);
+                                permission.code = reader.GetString(codeField);
+                                permission.description = reader.IsDBNull(descriptionField) ? string.Empty : reader.GetString(descriptionField);
+                                permission.active = reader.GetBoolean(activeField);
+                            }
+
+                        }
+                        return permission;
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    if(ex.Number == 50000)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
+                    connection.Close();
+                    throw new Exception("Error en obtener el permiso por id: " + ex.Message, ex);
+                }
+           }
+        }
+
         public List<Permission> GetPermissions()
         {
            List<Permission> permissions = new List<Permission>();
@@ -32,6 +77,7 @@ namespace Persistence.Permissions
                             int nameField = reader.GetOrdinal("name");
                             int codeField = reader.GetOrdinal("code");
                             int descriptionField = reader.GetOrdinal("description");
+                            int activeField = reader.GetOrdinal("active");
                             while (reader.Read())
                             {
                                 Permission permission = new Permission();
@@ -39,6 +85,7 @@ namespace Persistence.Permissions
                                 permission.name = reader.GetString(nameField);
                                 permission.code = reader.GetString(codeField);
                                 permission.description = reader.IsDBNull(descriptionField) ? string.Empty: reader.GetString(descriptionField);
+                                permission.active = reader.GetBoolean(activeField);
                                 permissions.Add(permission);
                             }
                         }
@@ -48,7 +95,7 @@ namespace Persistence.Permissions
                 catch (Exception ex)
                 {
                     connection.Close();
-                    throw new Exception("Error en obtener posiciones " + ex.Message, ex);
+                    throw new Exception("Error en obtener los permisos " + ex.Message, ex);
                 }
             }
 
@@ -97,6 +144,8 @@ namespace Persistence.Permissions
                         command.Parameters.AddWithValue("@name", permission.name);
                         command.Parameters.AddWithValue("@code", permission.code);
                         command.Parameters.AddWithValue("@description", permission.description);
+                        command.Parameters.AddWithValue("@active", permission.active);
+
                         command.ExecuteNonQuery();
                     }
 

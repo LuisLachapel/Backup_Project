@@ -14,6 +14,7 @@ const errorMessage = ref("")
 const create = async (permission) =>{
     try {
         await store.insert(permission)
+        await store.getPermissions()
         showCreateModal.value = false
     } catch (error) {
         errorMessage.value = error.message

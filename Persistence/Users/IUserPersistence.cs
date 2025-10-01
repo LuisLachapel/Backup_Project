@@ -1,6 +1,4 @@
-﻿
-
-using Entity;
+﻿using Entity;
 
 namespace Persistence.Users
 {
@@ -9,7 +7,7 @@ namespace Persistence.Users
         int DeleteUser(int id);
         List<User> GetAllUser();
         List<UserNotesSummary> GetAllSumary(DateTime? startDate, DateTime? endDate);
-        User GetById(int id);
+        User? GetById(int id);
         void InsertUser(User user);
         void UpdateUser(User user);
     }
