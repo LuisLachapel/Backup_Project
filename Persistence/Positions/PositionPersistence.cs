@@ -83,7 +83,7 @@ namespace Persistence.Positions
           }
         }
 
-        public Position GetById(int id)
+        public Position? GetById(int id)
         {
             Position? position = null;
             using(SqlConnection connection = new SqlConnection(_connectionString))

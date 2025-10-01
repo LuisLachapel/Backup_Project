@@ -8,6 +8,6 @@ namespace Persistence.Positions
         void InsertPosition(Position position);
         void UpdatePosition(Position position);
         int DeletePosition(int id); 
-        Position GetById(int id);
+        Position? GetById(int id);
     }
 }

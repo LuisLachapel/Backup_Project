@@ -37,6 +37,11 @@ namespace Services.Permissions
 
         }
 
+        public void InsertUserPermission(CreateUserPermissionModel model)
+        {
+            _function.InsertUserPermissions(model.userId,model.permissionIds);
+        }
+
         public void Update(int id, UpdatePermissionModel model)
         {
             var permission = new Permission

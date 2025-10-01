@@ -130,6 +130,37 @@ namespace Persistence.Permissions
             }
         }
 
+        public void InsertUserPermissions(int userId, List<int> permissionIds)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                foreach(int permissionId in permissionIds)
+                {
+                    using(SqlCommand command = new SqlCommand("InsertUserPermission", connection))
+                    {
+                       command.CommandType=CommandType.StoredProcedure;
+                       command.Parameters.AddWithValue("@userId", userId);
+                       command.Parameters.AddWithValue("@permissionId", permissionId);
+                        try
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                        catch (SqlException ex)
+                        {
+                            if(ex.Number == 50000)
+                            {
+                                throw new ArgumentException(ex.Message);
+                            }
+                            throw new Exception("Error en insertar permisos a usuarios " + ex.Message, ex);
+                            
+                        }
+                    }
+
+                }
+            }
+        }
+
         public void UpdatePermission(Permission permission)
         {
             using(SqlConnection connection = new SqlConnection(_connectionString))
