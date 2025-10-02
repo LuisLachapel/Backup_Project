@@ -1,6 +1,8 @@
 <script setup>
 import { useUserStore } from '@/stores/userStore';
+import { usePermissionStore } from '@/stores/permissionStore';
 import { ref, watch, onMounted } from "vue"
+import PermissionCheckBox from '../permission/PermissionCheckBox.vue';
 
 const props = defineProps({
     show: {type: Boolean, default: false},
@@ -10,18 +12,20 @@ const props = defineProps({
 const emit = defineEmits(["close", "saved"])
 
 const store = useUserStore()
+const permissionStore = usePermissionStore()
 
 const name = ref('')
 const positionId = ref(null)
 
 onMounted(() =>{
     store.getAllPosition();
+    permissionStore.getPermissions();
 })
 
 watch(
   () => props.show,
-  async (val) => {
-    if (val && props.user && props.user.id) {
+  async () => {
+    if (props.show && props.user && props.user.id) {
       try {
         const data = await store.getById(props.user.id)
         name.value = data.name
@@ -30,7 +34,7 @@ watch(
         console.error("Error cargando el usuario:", error)
       }
     }
-    if (val && !props.user) {
+    if (props.show && !props.user) {
       name.value = ""
       positionId.value = null
     }
@@ -69,7 +73,7 @@ const close = () => {
       v-if="show"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
-      <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative p-4 w-full max-w-lg max-h-full">
         <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
           <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b border-gray-200">
@@ -96,6 +100,7 @@ const close = () => {
                   class="w-full p-2.5 border rounded-lg"
                   placeholder="Ingrese el título"
                   maxlength="20"
+                  required
                 />
                 <p class="text-sm text-gray-500">{{ name.length }}/20</p>
               </div>
@@ -116,6 +121,10 @@ const close = () => {
                   </option>
                 </select>
               </div>
+
+               <div>
+                <PermissionCheckBox/>
+               </div>
               
             </div>
 
