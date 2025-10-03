@@ -14,6 +14,10 @@ export const usePermissionStore = defineStore("permission",{
             const {data} = await axios.get(`https://localhost:7108/Permission/get-by-id/${id}`)
             return data;
         },
+        async getUserPermissionById(id){
+            const {data} = await axios.get(`https://localhost:7108/Permission/get-user-permission-by-id/${id}`)
+            return data;
+        },
         async insert(permission){
             try {
                 axios.post("https://localhost:7108/Permission/create",permission)

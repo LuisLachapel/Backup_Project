@@ -10,5 +10,6 @@ namespace Services.Users.Models
 
         [Required(ErrorMessage = "El cargo es requerido")]
         public int positionId { get; set; }
+        public List<int>? permissionIds { get; set; }
     }
 }

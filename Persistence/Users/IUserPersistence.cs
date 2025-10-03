@@ -8,7 +8,7 @@ namespace Persistence.Users
         List<User> GetAllUser();
         List<UserNotesSummary> GetAllSumary(DateTime? startDate, DateTime? endDate);
         User? GetById(int id);
-        void InsertUser(User user);
+        int InsertUser(User user);
         void UpdateUser(User user);
     }
 }

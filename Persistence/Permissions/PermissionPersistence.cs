@@ -101,6 +101,47 @@ namespace Persistence.Permissions
 
         }
 
+        public List<UserPermission> GetUserPermissionById(int id)
+        {
+            List<UserPermission> userPermissions = new List<UserPermission>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                
+                try
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand("getPermissionsByUser", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@userId", id);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int idField = reader.GetOrdinal("userPermissionId");
+                            int idPermissionField = reader.GetOrdinal("permissionId");
+                            while (reader.Read())
+                            {
+                                UserPermission userPermission = new UserPermission();
+                                userPermission.id = reader.GetInt32(idField);
+                                userPermission.permissionId = reader.GetInt32(idPermissionField);
+                                userPermissions.Add(userPermission);
+                            }
+
+                        }
+                    }
+                    return userPermissions;
+                }
+                catch (SqlException ex)
+                {
+                    if(ex.Number == 50000)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
+                    throw new Exception("Error en obtener permisos en la tabla UserPermission " + ex.Message, ex);
+                }
+            }
+        }
+
         public void InsertPermission(Permission permission)
         {
             using(SqlConnection connection = new SqlConnection(_connectionString))
@@ -189,6 +230,73 @@ namespace Persistence.Permissions
                     }
                     connection.Close();
                     throw new Exception("error en editar permisos " + ex.Message, ex);
+                }
+            }
+        }
+
+        public void UpdateUserPermissions(int userId, List<int> newPermissionIds)
+        {
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    var currentPermissions = new List<int>();
+                    //Obtener permisos actuales del usuario
+                    using (SqlCommand command = new SqlCommand("getPermissionsByUser", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@userId", userId);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int idPermissionField = reader.GetOrdinal("permissionId");
+                            while (reader.Read())
+                            {
+                                currentPermissions.Add(reader.GetInt32(idPermissionField));
+                            }
+
+                        }
+
+                    }
+
+                    //Añadir permisos nuevos
+                    var toAdd = newPermissionIds.Except(currentPermissions).ToList();
+                    foreach(var permissionId in toAdd)
+                    {
+                        using(SqlCommand command = new SqlCommand("InsertUserPermission", connection))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@userId", userId);
+                            command.Parameters.AddWithValue("@permissionId", permissionId);
+                            command.ExecuteNonQuery();
+
+                        }
+                    }
+
+                    //permisos a eliminar
+                    var toRemove = currentPermissions.Except(newPermissionIds).ToList();
+                    foreach(var permissionId in toRemove)
+                    {
+                        using (SqlCommand command = new SqlCommand("DeleteUserPermission",connection))
+                        {
+                           command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@userId", userId);
+                            command.Parameters.AddWithValue("@permissionId", permissionId);
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                    
+                }
+                catch (SqlException ex)
+                {
+                    if(ex.Number == 50000)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
+
+                    connection.Close();
+                    throw new ArgumentException("Error en actualizar permisos de usuario " +ex.Message, ex);
                 }
             }
         }

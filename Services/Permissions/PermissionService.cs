@@ -24,6 +24,17 @@ namespace Services.Permissions
             return permission;
         }
 
+        public List<GetUserPermissionModel> GetUserPermissionById(int id)
+        {
+            var userPermissions = _function.GetUserPermissionById(id);
+            var model = userPermissions.Select(u => new GetUserPermissionModel{
+                id = u.id,
+                permissionId = u.permissionId
+            }).ToList();
+
+            return model;
+        }
+
         public void Insert(CreatePermissionModel model)
         {
             var permission = new Permission
@@ -53,6 +64,11 @@ namespace Services.Permissions
                 active = model.active
             };
             _function.UpdatePermission(permission);
+        }
+
+        public void UpdateUserPermission(CreateUserPermissionModel model)
+        {
+            _function.UpdateUserPermissions(model.userId, model.permissionIds);
         }
     }
 }

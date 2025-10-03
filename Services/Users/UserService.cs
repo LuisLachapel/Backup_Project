@@ -2,18 +2,21 @@
 using Persistence.Users;
 using Services.Positions;
 using Services.Users.Models;
+using Persistence.Permissions;
 namespace Services.Users
 {
     public class UserService : IUserService
     {
         private readonly IUserPersistence _functions;
         private readonly IPositionService _positionService;
+        private readonly IPermissionPersitence _permissionFunction; 
         
 
-        public UserService(IUserPersistence functions, IPositionService positionService)
+        public UserService(IUserPersistence functions, IPositionService positionService, IPermissionPersitence permissionFunction)
         {
             _functions = functions;
             _positionService = positionService;
+            _permissionFunction = permissionFunction;
         }
         
         public int DeleteUser(int id)
@@ -78,7 +81,11 @@ namespace Services.Users
                 name = model.name,
                 positionId = model.positionId
             };
-            _functions.InsertUser(user);
+            var userId = _functions.InsertUser(user);
+            if(model.permissionIds != null && model.permissionIds.Any())
+            {
+                _permissionFunction.InsertUserPermissions(userId,model.permissionIds);
+            }
         }
 
         public void UpdateUser(int id, CreateUserModel model)
