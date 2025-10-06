@@ -18,6 +18,25 @@ export const usePermissionStore = defineStore("permission",{
             const {data} = await axios.get(`https://localhost:7108/Permission/get-user-permission-by-id/${id}`)
             return data;
         },
+        async updateUserPermission(permission){
+            try {
+                await axios.put(`https://localhost:7108/Permission/update-permission`,{
+                    userId: permission.id,
+                    permissionIds: permission.permissions
+                })
+            } catch (error) {
+                if (error.response && error.response.data) {
+                    
+                    const errors = error.response.data.errors;
+                    if (errors) {
+                        const firstField = Object.keys(errors)[0];
+                        throw new Error(errors[firstField][0]); 
+                    }
+                    throw new Error(error.response.data.message || "Error desconocido");
+                }
+                throw new Error("Error desconocido");
+            }
+        },
         async insert(permission){
             try {
                 axios.post("https://localhost:7108/Permission/create",permission)

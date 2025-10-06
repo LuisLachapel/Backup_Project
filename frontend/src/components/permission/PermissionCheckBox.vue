@@ -23,13 +23,14 @@ watch(
     {immediate: true}
 )
 
-const togglePermission = (id) =>{
-  if(checkedPermissions.value.includes(id)){
-    checkedPermissions.value = checkedPermissions.value.filter(p => p.id  !== id)
-  }else{
+const togglePermission = (id) => {
+  if (checkedPermissions.value.includes(id)) {
+    
+    checkedPermissions.value = checkedPermissions.value.filter(p => p !== id)
+  } else {
     checkedPermissions.value.push(id)
   }
-  emit("update:selectedPermissions",checkedPermissions.value)
+  emit("update:selectedPermissions", checkedPermissions.value)
 }
 
 const toggleAccordion = () => {
@@ -43,7 +44,7 @@ const toggleAccordion = () => {
     <h2>
       <button type="button" 
         class="flex items-center justify-between w-full py-5 font-medium rtl:text-right 
-               text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3"
+               text-black-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3"
         @click="toggleAccordion">
         <span>Permisos</span>
         <svg class="w-3 h-3 shrink-0 transition-transform duration-200"

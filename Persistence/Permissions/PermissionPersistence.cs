@@ -247,20 +247,25 @@ namespace Persistence.Permissions
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@userId", userId);
-                        SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
+                        using(SqlDataReader reader = command.ExecuteReader())
                         {
-                            int idPermissionField = reader.GetOrdinal("permissionId");
-                            while (reader.Read())
+                            if (reader.HasRows)
                             {
-                                currentPermissions.Add(reader.GetInt32(idPermissionField));
-                            }
+                                int idPermissionField = reader.GetOrdinal("permissionId");
+                                while (reader.Read())
+                                {
+                                    Console.WriteLine(idPermissionField);
+                                    currentPermissions.Add(reader.GetInt32(idPermissionField));
+                                }
 
+                            }
                         }
+                        
 
                     }
 
                     //Añadir permisos nuevos
+
                     var toAdd = newPermissionIds.Except(currentPermissions).ToList();
                     foreach(var permissionId in toAdd)
                     {
@@ -276,7 +281,7 @@ namespace Persistence.Permissions
 
                     //permisos a eliminar
                     var toRemove = currentPermissions.Except(newPermissionIds).ToList();
-                    foreach(var permissionId in toRemove)
+                    foreach (var permissionId in toRemove)
                     {
                         using (SqlCommand command = new SqlCommand("DeleteUserPermission",connection))
                         {

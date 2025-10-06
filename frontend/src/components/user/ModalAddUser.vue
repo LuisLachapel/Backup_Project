@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/userStore';
 import { usePermissionStore } from '@/stores/permissionStore';
 import { ref, watch, onMounted } from "vue"
 import PermissionCheckBox from '../permission/PermissionCheckBox.vue';
+import ErrorModal from '../ErrorModal.vue';
 
 const props = defineProps({
     show: {type: Boolean, default: false},
@@ -12,6 +13,8 @@ const props = defineProps({
 const emit = defineEmits(["close", "saved"])
 
 const store = useUserStore()
+const showError = ref(false)
+const errorMessage = ref("")
 const permissionStore = usePermissionStore()
 const selectedPermissions = ref([]) 
 
@@ -34,7 +37,8 @@ watch(
         const perms = await permissionStore.getUserPermissionById(props.user.id)
         selectedPermissions.value = perms.map(p => p.permissionId)
       } catch (error) {
-        console.error("Error cargando el usuario:", error)
+        errorMessage.value = error.message
+        showError.value = true;
       }
     }
     if (props.show && !props.user) {
@@ -45,8 +49,9 @@ watch(
   }
 )
 
-const saveUser= () => {
-  if (props.user) {
+const saveUser= async () => {
+  try {
+    if (props.user) {
     // Editar
     const data = {
       id: props.user?.id,
@@ -54,6 +59,8 @@ const saveUser= () => {
       positionId: positionId.value,
       permissions: selectedPermissions.value 
     }
+
+    await permissionStore.updateUserPermission(data)
     emit("saved", data)
   } else {
     // Crear
@@ -65,6 +72,10 @@ const saveUser= () => {
     emit("saved", data)
   }
   close()
+  } catch (error) {
+    errorMessage.value = error.message
+    showError.value = true
+  }
 }
 
 const close = () => {
@@ -122,4 +133,6 @@ const close = () => {
       </div>
     </div>
   </teleport>
+
+  <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
 </template>
