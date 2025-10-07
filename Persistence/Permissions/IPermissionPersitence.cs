@@ -9,6 +9,7 @@ namespace Persistence.Permissions
         void UpdatePermission(Permission permission);
         void UpdateUserPermissions(int userId, List<int> newPermissionIds);
         List<Permission> GetPermissions();
+        List<Permission> GetAuthorization(int id);
         Permission GetPermission(int id);
         List<UserPermission> GetUserPermissionById(int id);
     }

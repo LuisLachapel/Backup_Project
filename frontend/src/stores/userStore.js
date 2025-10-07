@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { useSessionStore } from "./sessionStore";
+
 
 export const useUserStore = defineStore("user", {
     state: () => ({
@@ -13,7 +15,11 @@ export const useUserStore = defineStore("user", {
         },
         async createUser(user) {
             try {
-                await axios.post("https://localhost:7108/User/create", user)
+                 const { currentUser } = useSessionStore()
+                 const userId = currentUser?.id
+                await axios.post("https://localhost:7108/User/create", user,{
+                    params:{userId}
+                })
                 await this.getAllUser();
             } catch (error) {
                 if (error.response && error.response.data) {

@@ -14,6 +14,46 @@ namespace Persistence.Permissions
             _connectionString = connectionString;
         }
 
+        public List<Permission> GetAuthorization(int id)
+        {
+            List<Permission> permissions = new List<Permission>();
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand("authorizeAccess",connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@userId", id);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int idField = reader.GetOrdinal("id");
+                            int codeField = reader.GetOrdinal("code");
+                            while (reader.Read())
+                            {
+                                Permission permission = new Permission();
+                                permission.id = reader.GetInt32(idField);
+                                permission.code = reader.GetString(codeField);
+                                permissions.Add(permission);
+                            }
+                        }
+                        return permissions;
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    if(ex.Number == 50000)
+                    {
+                        throw new ArgumentException( ex.Message);
+                    }
+                    connection.Close();
+                    throw new ArgumentException("Error en obtener autorización " + ex.Message, ex);
+                }
+            }
+        }
+
         public Permission GetPermission(int id)
         {
             Permission permission = new Permission();
@@ -254,7 +294,7 @@ namespace Persistence.Permissions
                                 int idPermissionField = reader.GetOrdinal("permissionId");
                                 while (reader.Read())
                                 {
-                                    Console.WriteLine(idPermissionField);
+                                    
                                     currentPermissions.Add(reader.GetInt32(idPermissionField));
                                 }
 
