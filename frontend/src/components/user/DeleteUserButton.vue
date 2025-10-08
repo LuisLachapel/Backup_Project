@@ -1,18 +1,26 @@
 <script setup>
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/userStore';
-
+import ErrorModal from '../ErrorModal.vue';
 const props = defineProps({
     id: {type: Number, required: true}
 })
 
+
 const store = useUserStore()
 const closeModal = ref(false)
+const showError = ref(false);
+const errorMessage = ref('');
 
-const deleteUser = async () =>{
-    await store.deleteUser(props.id)
+const deleteUser = async () => {
+  try {
+    await store.deleteUser(props.id);
     closeModal.value = false;
-}
+  } catch (error) {
+    errorMessage.value = error.message || "Error desconocido";
+    showError.value = true;
+  }
+};
 
 </script>
 
@@ -101,6 +109,8 @@ const deleteUser = async () =>{
       </div>
     </div>
   </div>
+
+   <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
 
 
 </template>

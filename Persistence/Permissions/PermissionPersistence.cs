@@ -27,17 +27,20 @@ namespace Persistence.Permissions
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@userId", id);
                         SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
+                        if (!reader.HasRows)
                         {
-                            int idField = reader.GetOrdinal("id");
-                            int codeField = reader.GetOrdinal("code");
-                            while (reader.Read())
-                            {
-                                Permission permission = new Permission();
-                                permission.id = reader.GetInt32(idField);
-                                permission.code = reader.GetString(codeField);
-                                permissions.Add(permission);
-                            }
+                            return permissions;
+                            
+                        }
+                        int idField = reader.GetOrdinal("id");
+                        int codeField = reader.GetOrdinal("code");
+                        while (reader.Read())
+                        {
+                            
+                            Permission permission = new Permission();
+                            permission.id = reader.GetInt32(idField);
+                            permission.code = reader.GetString(codeField);
+                            permissions.Add(permission);
                         }
                         return permissions;
                     }

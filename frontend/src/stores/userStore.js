@@ -15,10 +15,10 @@ export const useUserStore = defineStore("user", {
         },
         async createUser(user) {
             try {
-                 const { currentUser } = useSessionStore()
-                 const userId = currentUser?.id
-                await axios.post("https://localhost:7108/User/create", user,{
-                    params:{userId}
+                const { currentUser } = useSessionStore()
+                const userId = currentUser?.id
+                await axios.post("https://localhost:7108/User/create", user, {
+                    params: { userId }
                 })
                 await this.getAllUser();
             } catch (error) {
@@ -52,12 +52,34 @@ export const useUserStore = defineStore("user", {
             }
         },
         async deleteUser(id) {
-            await axios.delete(`https://localhost:7108/User/delete/${id}`)
-            this.getAllUser()
+            try {
+                const { currentUser } = useSessionStore()
+                const userId = currentUser?.id
+                await axios.delete(`https://localhost:7108/User/delete/${id}`, {
+                    params: { userId }
+                })
+                this.getAllUser()
+            } catch (error) {
+                if (error.response && error.response.data) {
+
+                    const errors = error.response.data.errors;
+                    if (errors) {
+                        const firstField = Object.keys(errors)[0];
+                        throw new Error(errors[firstField][0]);
+                    }
+                    throw new Error(error.response.data.message || "Error desconocido");
+                }
+                throw new Error("Error desconocido");
+            }
         },
         async updateUser(user) {
+
+            const { currentUser } = useSessionStore()
+            const userId = currentUser?.id
             try {
-                await axios.put(`https://localhost:7108/User/update/${user.id}`, user)
+                await axios.put(`https://localhost:7108/User/update/${user.id}`, user, {
+                    params: { userId }
+                })
 
             } catch (error) {
                 if (error.response && error.response.data) {
@@ -90,42 +112,68 @@ export const useUserStore = defineStore("user", {
                 }
             }
         },
-        async download(type, startDate, endDate){
+        async download(type, startDate, endDate) {
             try {
                 const endpoint = {
-                pdf: {
-                    url: 'https://localhost:7108/User/report',
-                    extension: '.pdf'
-                },
-                excel: {
-                    url: 'https://localhost:7108/User/excel-user-report',
-                    extension: '.xlsx'
+                    pdf: {
+                        url: 'https://localhost:7108/User/report',
+                        extension: '.pdf'
+                    },
+                    excel: {
+                        url: 'https://localhost:7108/User/excel-user-report',
+                        extension: '.xlsx'
+                    }
+
                 }
-                
-            }
 
-            const {url, extension} = endpoint[type]
+                const { url, extension } = endpoint[type]
 
-            const response = await axios.get(url,{
-                params:{
-                    startDate: startDate || null,
-                    endDate: endDate || null
-                },
-                responseType: "blob"
-            })
+                const { currentUser } = useSessionStore()
+                const userId = currentUser?.id
 
-            const today = new Date();
-            const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`
-            const fileUrl = window.URL.createObjectURL(response.data)
-            const link = document.createElement("a")
-            link.href = fileUrl;
-            link.setAttribute("download",fileName);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+                const response = await axios.get(url, {
+                    params: {
+                        startDate: startDate || null,
+                        endDate: endDate || null,
+                        userId: userId
+                    },
+                    responseType: "blob"
+                })
+
+                const today = new Date();
+                const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`
+                const fileUrl = window.URL.createObjectURL(response.data)
+                const link = document.createElement("a")
+                link.href = fileUrl;
+                link.setAttribute("download", fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
             } catch (error) {
-                throw new Error("No se pudo generar el reporte de usuarios.");
-            }
+  if (error.response && error.response.data) {
+    try {
+      // Convertir el blob a texto
+      const errorText = await error.response.data.text();
+
+      // Intentar parsear como JSON (por si viene en formato JSON)
+      let errorMessage = "";
+      try {
+        const parsed = JSON.parse(errorText);
+        errorMessage = parsed.message || "Error desconocido";
+      } catch {
+        // Si no es JSON, usar el texto directamente
+        errorMessage = errorText || "Error desconocido";
+      }
+
+      throw new Error(errorMessage);
+    } catch (err) {
+      throw new Error("Error al procesar la respuesta del servidor");
+    }
+  } else {
+    throw new Error("Error al conectar con el servidor");
+  }
+}
+
         },
     }
 })
