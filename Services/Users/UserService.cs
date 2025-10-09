@@ -3,6 +3,8 @@ using Persistence.Users;
 using Services.Positions;
 using Services.Users.Models;
 using Persistence.Permissions;
+using Services.Response;
+using Microsoft.AspNetCore.Http;
 namespace Services.Users
 {
     public class UserService : IUserService
@@ -29,11 +31,11 @@ namespace Services.Users
             return response;
         }
 
-        public List<GetAllUserModel> GetAllUsers()
+        public ResponseModel GetAllUsers()
         {
             var users = _functions.GetAllUser();
 
-            return users.Select(u => new GetAllUserModel
+           var response = users.Select(u => new GetAllUserModel
             {
                 id = u.id,
                 name = u.name,
@@ -42,17 +44,19 @@ namespace Services.Users
                 creationDate = u.creationDate,
             }).ToList();
 
+            return ResponseApiService.Response(200,response);
+
             
         }
 
-        public GetAllUserModel? GetUserById(int id)
+        public ResponseModel GetUserById(int id)
         {
             var user = _functions.GetById(id);
             if(user == null)
             {
-                return null;
+                return ResponseApiService.Response(StatusCodes.Status404NotFound,null,"Usuario no encontrado");
             }
-            return new GetAllUserModel
+            var response = new GetAllUserModel
             {
                 id = user.id,
                 name = user.name,
@@ -60,6 +64,9 @@ namespace Services.Users
                 position = user.position?.name ?? string.Empty
 
             };
+
+            return ResponseApiService.Response(200,response);
+
         }
 
         public List<UserNotesSummary> GetUserNotesSummaries(DateTime? startDate, DateTime? endDate)
@@ -69,12 +76,13 @@ namespace Services.Users
             return summary;
         }
 
-        public void InsertUser(CreateUserModel model)
+        public ResponseModel InsertUser(CreateUserModel model)
         {
             var position = _positionService.GetById(model.positionId);
             if(position == null)
             {
-                throw new ArgumentException($"La posición con id {model.positionId} no existe.");
+               return ResponseApiService.Response(StatusCodes.Status400BadRequest, null, $"La posición con id {model.positionId} no existe.");
+                
             }
             var user = new User
             {
@@ -82,10 +90,12 @@ namespace Services.Users
                 positionId = model.positionId
             };
             var userId = _functions.InsertUser(user);
+            
             if(model.permissionIds != null && model.permissionIds.Any())
             {
                 _permissionFunction.InsertUserPermissions(userId,model.permissionIds);
             }
+            return ResponseApiService.Response(StatusCodes.Status201Created, null, "Usuario insertado correctamente");
         }
 
         public void UpdateUser(int id, CreateUserModel model)
@@ -96,18 +106,21 @@ namespace Services.Users
                 throw new ArgumentException($"La posición con id {model.positionId} no existe.");
             }
             var userExist = _functions.GetById(id);
-            if (userExist != null)
+            if (userExist == null)
             {
-
-                var user = new User
-                {
-                    id = id,
-                    name = model.name,
-                    positionId = model.positionId
-                };
-                _functions.UpdateUser(user);
+                throw new ArgumentException($"El usuario con id {id} no existe.");
             }
-            
+
+            // Actualizar el usuario
+            var user = new User
+            {
+                id = id,
+                name = model.name,
+                positionId = model.positionId
+            };
+
+            _functions.UpdateUser(user);
+
         }
     }
 }

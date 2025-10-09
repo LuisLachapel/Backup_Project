@@ -105,7 +105,7 @@ const close = () => {
             <div class="grid gap-4 mb-4">
               <div>
                 <label class="block mb-2 text-sm font-medium">Nombre</label>
-                <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="20" required />
+                <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="20"  />
               </div>
 
               <div>

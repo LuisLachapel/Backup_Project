@@ -23,16 +23,11 @@ export const useUserStore = defineStore("user", {
                 await this.getAllUser();
             } catch (error) {
                 if (error.response && error.response.data) {
-
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]);
-                    }
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
             }
+
         },
         async getAllPosition() {
             try {
@@ -83,12 +78,6 @@ export const useUserStore = defineStore("user", {
 
             } catch (error) {
                 if (error.response && error.response.data) {
-
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]);
-                    }
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
@@ -96,7 +85,7 @@ export const useUserStore = defineStore("user", {
         },
         async getById(id) {
             const { data } = await axios.get(`https://localhost:7108/User/get-by-id/${id}`)
-            return data;
+            return data.value;
         },
         async getSummary(startDate, endDate) {
             try {
@@ -150,29 +139,29 @@ export const useUserStore = defineStore("user", {
                 link.click();
                 link.remove();
             } catch (error) {
-  if (error.response && error.response.data) {
-    try {
-      // Convertir el blob a texto
-      const errorText = await error.response.data.text();
+                if (error.response && error.response.data) {
+                    try {
+                        // Convertir el blob a texto
+                        const errorText = await error.response.data.text();
 
-      // Intentar parsear como JSON (por si viene en formato JSON)
-      let errorMessage = "";
-      try {
-        const parsed = JSON.parse(errorText);
-        errorMessage = parsed.message || "Error desconocido";
-      } catch {
-        // Si no es JSON, usar el texto directamente
-        errorMessage = errorText || "Error desconocido";
-      }
+                        // Intentar parsear como JSON (por si viene en formato JSON)
+                        let errorMessage = "";
+                        try {
+                            const parsed = JSON.parse(errorText);
+                            errorMessage = parsed.message || "Error desconocido";
+                        } catch {
+                            // Si no es JSON, usar el texto directamente
+                            errorMessage = errorText || "Error desconocido";
+                        }
 
-      throw new Error(errorMessage);
-    } catch (err) {
-      throw new Error("Error al procesar la respuesta del servidor");
-    }
-  } else {
-    throw new Error("Error al conectar con el servidor");
-  }
-}
+                        throw new Error(errorMessage);
+                    } catch (err) {
+                        throw new Error("Error al procesar la respuesta del servidor");
+                    }
+                } else {
+                    throw new Error("Error al conectar con el servidor");
+                }
+            }
 
         },
     }

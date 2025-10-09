@@ -1,4 +1,5 @@
 ﻿using Services.Users.Models;
+using Entity;
 using Persistence.Users;
 
 namespace Services.Users
@@ -6,11 +7,11 @@ namespace Services.Users
     public interface IUserService
     {
         int DeleteUser(int id);
-        List<GetAllUserModel> GetAllUsers();
+        ResponseModel GetAllUsers();
 
-        GetAllUserModel? GetUserById(int id);
+        ResponseModel GetUserById(int id);
 
-        void InsertUser(CreateUserModel user);
+        ResponseModel InsertUser(CreateUserModel user);
         void UpdateUser(int id, CreateUserModel user);
 
         List<UserNotesSummary> GetUserNotesSummaries(DateTime? startDate, DateTime? endDate);
