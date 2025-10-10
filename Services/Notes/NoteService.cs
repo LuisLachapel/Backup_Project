@@ -37,12 +37,12 @@ namespace Services.Notes
                 description = note.description,
                 date = note.date,
                 userId = note.userId,
-                username = note?.user.name ?? string.Empty
+                username = note?.user?.name ?? string.Empty
 
             }).ToList();
         }
 
-        public GetNoteModel GetById(int id)
+        public GetNoteModel? GetById(int id)
         {
             var note = _function.GetById(id);
             if (note == null)
@@ -57,7 +57,8 @@ namespace Services.Notes
                 description = note.description,
                 date = note.date,
                 userId = note.userId,
-                username = note?.user.name ?? string.Empty
+                username = note?.user?.name ?? string.Empty
+
             };
         }
 

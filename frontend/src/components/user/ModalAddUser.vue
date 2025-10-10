@@ -105,12 +105,12 @@ const close = () => {
             <div class="grid gap-4 mb-4">
               <div>
                 <label class="block mb-2 text-sm font-medium">Nombre</label>
-                <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="20"  />
+                <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="20" required />
               </div>
 
               <div>
                 <label class="block mb-2 text-sm font-medium">Asignar una posición</label>
-                <select v-model="positionId" class="w-full p-2.5 border rounded-lg">
+                <select v-model="positionId" class="w-full p-2.5 border rounded-lg" required>
                   <option disabled value="">Seleccione una posición</option>
                   <option v-for="position in store.positions" :key="position.id" :value="position.id">
                     {{ position.name }}

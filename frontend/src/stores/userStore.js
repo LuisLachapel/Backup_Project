@@ -112,13 +112,11 @@ export const useUserStore = defineStore("user", {
                         url: 'https://localhost:7108/User/excel-user-report',
                         extension: '.xlsx'
                     }
+                };
 
-                }
-
-                const { url, extension } = endpoint[type]
-
-                const { currentUser } = useSessionStore()
-                const userId = currentUser?.id
+                const { url, extension } = endpoint[type];
+                const { currentUser } = useSessionStore();
+                const userId = currentUser?.id;
 
                 const response = await axios.get(url, {
                     params: {
@@ -126,43 +124,34 @@ export const useUserStore = defineStore("user", {
                         endDate: endDate || null,
                         userId: userId
                     },
-                    responseType: "blob"
-                })
+                    responseType: "blob",
+                    validateStatus: () => true // <-- Permite manejar manualmente códigos 403, 400, etc.
+                });
 
+                // 🔹 Verificamos si la respuesta es JSON (error) o archivo (blob)
+                const contentType = response.headers["content-type"];
+
+                if (contentType && contentType.includes("application/json")) {
+                    const text = await response.data.text();
+                    const errorJson = JSON.parse(text);
+                    throw new Error(errorJson.message || "Error desconocido");
+                }
+
+                // 🔹 Si llega aquí, la respuesta es un archivo válido
                 const today = new Date();
-                const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`
-                const fileUrl = window.URL.createObjectURL(response.data)
-                const link = document.createElement("a")
+                const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`;
+                const fileUrl = window.URL.createObjectURL(response.data);
+                const link = document.createElement("a");
                 link.href = fileUrl;
                 link.setAttribute("download", fileName);
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
             } catch (error) {
-                if (error.response && error.response.data) {
-                    try {
-                        // Convertir el blob a texto
-                        const errorText = await error.response.data.text();
-
-                        // Intentar parsear como JSON (por si viene en formato JSON)
-                        let errorMessage = "";
-                        try {
-                            const parsed = JSON.parse(errorText);
-                            errorMessage = parsed.message || "Error desconocido";
-                        } catch {
-                            // Si no es JSON, usar el texto directamente
-                            errorMessage = errorText || "Error desconocido";
-                        }
-
-                        throw new Error(errorMessage);
-                    } catch (err) {
-                        throw new Error("Error al procesar la respuesta del servidor");
-                    }
-                } else {
-                    throw new Error("Error al conectar con el servidor");
-                }
+                console.error("Error al descargar:", error);
+                throw new Error(error.message || "Error desconocido");
             }
+        }
 
-        },
     }
 })

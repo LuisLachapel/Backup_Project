@@ -24,14 +24,8 @@ export const usePermissionStore = defineStore("permission",{
                     userId: permission.id,
                     permissionIds: permission.permissions
                 })
-            } catch (error) {
+            }  catch (error) {
                 if (error.response && error.response.data) {
-                    
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]); 
-                    }
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
@@ -41,14 +35,8 @@ export const usePermissionStore = defineStore("permission",{
             try {
                 axios.post("https://localhost:7108/Permission/create",permission)
                 await this.getPermissions()
-            } catch (error) {
+            }  catch (error) {
                 if (error.response && error.response.data) {
-                    
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]); 
-                    }
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
@@ -58,14 +46,8 @@ export const usePermissionStore = defineStore("permission",{
             try {
                 await axios.put(`https://localhost:7108/Permission/update/${permission.id}`,permission)
                 
-            } catch (error) {
+            }  catch (error) {
                 if (error.response && error.response.data) {
-                    
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]); 
-                    }
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");

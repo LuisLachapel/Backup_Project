@@ -7,7 +7,7 @@ namespace Services.Notes
     public interface INoteService
     {
         List<GetNoteModel> GetAllNotes();
-        GetNoteModel GetById(int id);
+        GetNoteModel? GetById(int id);
 
         void InsertNote(CreateNoteModel note);
         void updateNote(int  id, UpdateNoteModel note);

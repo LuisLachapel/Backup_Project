@@ -9,20 +9,14 @@ export const useNoteStore = defineStore("note", {
     actions: {
         async getAllNotes() {
             const { data } = await axios.get("https://localhost:7108/Note/get-all")
-            this.notes = data
+            this.notes = data.value
         },
         async createNote(note) {
             try {
                 await axios.post("https://localhost:7108/Note/create", note);
                 await this.getAllNotes();
-            } catch (error) {
+            }  catch (error) {
                 if (error.response && error.response.data) {
-                    
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]); 
-                    }
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
@@ -40,14 +34,8 @@ export const useNoteStore = defineStore("note", {
             
             try {
                 await axios.put(`https://localhost:7108/Note/update/${note.id}`, note)
-            } catch (error) {
-                 if (error.response && error.response.data) {
-                    
-                    const errors = error.response.data.errors;
-                    if (errors) {
-                        const firstField = Object.keys(errors)[0];
-                        throw new Error(errors[firstField][0]); 
-                    }
+            }  catch (error) {
+                if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
@@ -56,7 +44,7 @@ export const useNoteStore = defineStore("note", {
         },
         async getById(id) {
             const { data } = await axios.get(`https://localhost:7108/Note/get-by-id/${id}`)
-            return data
+            return data.value
         },
         async filterNoteByDate(startDate, endDate) {
             try {
@@ -64,14 +52,12 @@ export const useNoteStore = defineStore("note", {
                     params: { startDate, endDate }
                 });
 
-                this.notes = data;
+                this.notes = data.value;
             } catch (error) {
-
                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");
-                } else {
-                    throw new Error("Error al conectar con el servidor");
                 }
+                throw new Error("Error desconocido");
             }
         },
         async getSummary(startDate, endDate){
@@ -108,8 +94,17 @@ export const useNoteStore = defineStore("note", {
                     startDate: startDate || null,
                     endDate: endDate || null
                 },
-                responseType: "blob"
+                responseType: "blob",
+                validateStatus: () => true
             });
+
+            const contentType = response.headers["content-type"];
+
+                if (contentType && contentType.includes("application/json")) {
+                    const text = await response.data.text();
+                    const errorJson = JSON.parse(text);
+                    throw new Error(errorJson.message || "Error desconocido");
+                }
 
             const today = new Date()
             const fileName = `Listado de notas ${today.getDay()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`;
@@ -121,7 +116,8 @@ export const useNoteStore = defineStore("note", {
             link.click();
             link.remove();
             } catch (error) {
-                throw new Error("No se pudo generar el reporte de notas.");
+                console.error("Error al descargar:", error);
+                throw new Error(error.message || "Error desconocido");
             }
         }
 
