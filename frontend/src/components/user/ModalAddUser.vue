@@ -6,8 +6,8 @@ import PermissionCheckBox from '../permission/PermissionCheckBox.vue';
 import ErrorModal from '../ErrorModal.vue';
 
 const props = defineProps({
-    show: {type: Boolean, default: false},
-    user: {type: Object, default: null}
+  show: { type: Boolean, default: false },
+  user: { type: Object, default: null }
 })
 
 const emit = defineEmits(["close", "saved"])
@@ -16,62 +16,75 @@ const store = useUserStore()
 const showError = ref(false)
 const errorMessage = ref("")
 const permissionStore = usePermissionStore()
-const selectedPermissions = ref([]) 
+const selectedPermissions = ref([])
 
 const name = ref('')
 const positionId = ref(null)
 
-onMounted(() =>{
-    store.getAllPosition();
-    permissionStore.getPermissions();
+onMounted(() => {
+  store.getAllPosition();
+  permissionStore.getPermissions();
 })
 
 watch(
   () => props.show,
-  async () => {
-    if (props.show && props.user && props.user.id) {
-      try {
-        const data = await store.getById(props.user.id)
-        name.value = data.name
-        positionId.value = data.positionId ?? null 
-        const perms = await permissionStore.getUserPermissionById(props.user.id)
-        selectedPermissions.value = perms.map(p => p.permissionId)
-      } catch (error) {
-        errorMessage.value = error.message
-        showError.value = true;
+  async (newVal) => {
+    if (!newVal) return; // Si se cierra, no hacer nada
+
+    try {
+      // 🔹 Cargar posiciones si no existen
+      if (!store.positions?.length) {
+        await store.getAllPosition();
       }
-    }
-    if (props.show && !props.user) {
-      name.value = ""
-      positionId.value = null
-      selectedPermissions.value = []
+
+      // 🔹 Cargar permisos disponibles
+      if (!permissionStore.permissions?.length) {
+        await permissionStore.getPermissions();
+      }
+
+      // 🔹 Si estamos editando usuario
+      if (props.user?.id) {
+        const data = await store.getById(props.user.id);
+        name.value = data.name;
+        positionId.value = data.positionId ?? null;
+        const perms = await permissionStore.getUserPermissionById(props.user.id);
+        selectedPermissions.value = perms.map(p => p.permissionId);
+      } else {
+        name.value = "";
+        positionId.value = null;
+        selectedPermissions.value = [];
+      }
+    } catch (error) {
+      errorMessage.value = error.message;
+      showError.value = true;
     }
   }
-)
+);
 
-const saveUser= async () => {
+
+const saveUser = async () => {
   try {
     if (props.user) {
-    // Editar
-    const data = {
-      id: props.user?.id,
-      name: name.value,
-      positionId: positionId.value,
-      permissions: selectedPermissions.value 
-    }
+      // Editar
+      const data = {
+        id: props.user?.id,
+        name: name.value,
+        positionId: positionId.value,
+        permissions: selectedPermissions.value
+      }
 
-    await permissionStore.updateUserPermission(data)
-    emit("saved", data)
-  } else {
-    // Crear
-    const data = {
-      name: name.value,
-      positionId: positionId.value,
-      permissionIds: selectedPermissions.value 
+      await permissionStore.updateUserPermission(data)
+      emit("saved", data)
+    } else {
+      // Crear
+      const data = {
+        name: name.value,
+        positionId: positionId.value,
+        permissionIds: selectedPermissions.value
+      }
+      emit("saved", data)
     }
-    emit("saved", data)
-  }
-  close()
+    close()
   } catch (error) {
     errorMessage.value = error.message
     showError.value = true
@@ -93,9 +106,10 @@ const close = () => {
           <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ props.user? "Editar usuario" : "Crear usuario" }}
+              {{ props.user ? "Editar usuario" : "Crear usuario" }}
             </h3>
-            <button type="button" @click="emit('close')" class="text-gray-400 hover:bg-gray-200 rounded-lg w-8 h-8 flex justify-center items-center">
+            <button type="button" @click="emit('close')"
+              class="text-gray-400 hover:bg-gray-200 rounded-lg w-8 h-8 flex justify-center items-center">
               ✕
             </button>
           </div>
@@ -112,15 +126,15 @@ const close = () => {
                 <label class="block mb-2 text-sm font-medium">Asignar una posición</label>
                 <select v-model="positionId" class="w-full p-2.5 border rounded-lg" required>
                   <option disabled value="">Seleccione una posición</option>
-                  <option v-for="position in store.positions" :key="position.id" :value="position.id">
-                    {{ position.name }}
+                  <option v-for="position in (store.positions || [])" :key="position?.id" :value="position?.id">
+                    {{ position?.name }}
                   </option>
                 </select>
               </div>
 
               <!-- Permisos -->
               <div>
-                <PermissionCheckBox v-model:selectedPermissions="selectedPermissions"/>
+                <PermissionCheckBox v-model:selectedPermissions="selectedPermissions" />
               </div>
             </div>
 
