@@ -90,7 +90,7 @@ namespace Persistence.Notes
             }
         }
 
-        public Note GetById(int id)
+        public Note? GetById(int id)
         {
             Note? note = null;
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
@@ -255,6 +255,50 @@ namespace Persistence.Notes
 
                     connection.Close();
                     throw new Exception("Error en obtener el resumen de los datos " + ex.Message, ex);
+                }
+            }
+        }
+
+        public List<Note> GetNotesByUsers(int id)
+        {
+            List<Note> notes = new List<Note>();
+            using(SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                try
+                {
+                    using (SqlCommand command = new SqlCommand("getNotesByUserId", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@UserId", id);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            int idField = reader.GetOrdinal("id");
+                            int titleField = reader.GetOrdinal("title");
+                            int descriptionField = reader.GetOrdinal("description");
+                            int dateField = reader.GetOrdinal("date");
+                            while (reader.Read())
+                            {
+                                Note note = new Note();
+                                note.id = reader.GetInt32(idField);
+                                note.title = reader.GetString(titleField);
+                                note.description = reader.IsDBNull(descriptionField)? string.Empty : reader.GetString(descriptionField);
+                                note.date = reader.IsDBNull(dateField) ? DateTime.MinValue : reader.GetDateTime(dateField);
+                                notes.Add(note);
+                            }
+                        }
+                    }
+                    return notes;
+                }
+                catch (SqlException ex)
+                {
+                    if(ex.Number == 50000)
+                    {
+                        throw new ArgumentException(ex.Message);
+                    }
+                    connection.Close();
+                    throw new Exception("Error en obtener notas por usuarios " +ex.Message, ex);
                 }
             }
         }

@@ -9,9 +9,8 @@ export const usePositionStore = defineStore('position',{
         async getAllPosition(){
             try {
                const {data} =  await axios.get(`https://localhost:7108/Position/get-all`)
-               return this.positions = data.value || []
+               return this.positions = data
             } catch (error) {
-                this.positions = []
                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");
                 }

@@ -5,7 +5,8 @@ namespace Persistence.Notes
     public interface INotePersistence
     {
         List<Note> GetAllNotes(); 
-        Note GetById(int id);
+        List<Note> GetNotesByUsers(int id);
+        Note? GetById(int id);
         void InsertNote(Note note);
 
         void UpdateNote(Note note);

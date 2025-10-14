@@ -11,6 +11,10 @@ export const useNoteStore = defineStore("note", {
             const { data } = await axios.get("https://localhost:7108/Note/get-all")
             this.notes = data.value
         },
+        async getNotesByUser(id){
+            const {data} = await axios.get(`https://localhost:7108/Note/get-by-user/${id}`)
+            this.notes = data.value
+        },
         async createNote(note) {
             try {
                 await axios.post("https://localhost:7108/Note/create", note);

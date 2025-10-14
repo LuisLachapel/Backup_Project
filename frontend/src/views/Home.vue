@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useNoteStore } from '@/stores/noteStore';
+import { useSessionStore } from '@/stores/sessionStore';
 import ErrorModal from '@/components/ErrorModal.vue';
 import CardNote from '@/components/note/CardNote.vue';
 import FABNote from '@/components/note/FABNote.vue';
 
-// revisar: https://flowbite.com/docs/components/speed-dial/
-
 const store = useNoteStore();
+const sessionStore = useSessionStore()
 
 const startDate = ref("");
 const endDate = ref("");
@@ -17,7 +17,8 @@ const showError = ref(false);
 
 onMounted(async () => {
     try {
-        await store.getAllNotes();
+        const user = sessionStore.currentUser
+        await store.getNotesByUser(user.id)
     } catch (err) {
         errorMessage.value = err.message;
         showError.value = true;

@@ -81,6 +81,19 @@ namespace Services.Notes
 
         }
 
+        public List<GetNoteModel> GetNotesByUser(int id)
+        {
+            var notes = _function.GetNotesByUsers(id);
+           return notes.Select(n => new GetNoteModel{
+               id = n.id,
+               title = n.title,
+               description = n.description,
+               date = n.date,
+
+
+            }).ToList();
+        }
+
         public List<NotesByUsers> GetNotesByUsers(DateTime? startDate, DateTime? endDate)
         {
             var notes = _function.GetNotesByUsers(startDate, endDate);
