@@ -1,28 +1,30 @@
 <script setup>
 import { ref } from 'vue'
+import { useSessionStore } from '@/stores/sessionStore'
 import ModalAddNote from '@/components/ModalAddNote.vue'
 import { useNoteStore } from '@/stores/noteStore'
 import ErrorModal from '@/components/ErrorModal.vue'
 import EditIcon from '@/assets/EditIcon.vue'
 
 const props = defineProps({
-  note: { type: Object, required: true }
+  note: { type: Object, required: true },
+  isGlobalView: { type: Boolean, default: false } 
 })
 
 const store = useNoteStore()
+const { currentUser } = useSessionStore()
+const userId = currentUser?.id
 const showEditModal = ref(false)
 const showError = ref(false)
 const errorMessage = ref("")
 
 const UpdateNote = async (note) => {
   try {
-    await store.updateNote({ ...note, id: props.note.id })
-    await store.getAllNotes()
+    await store.updateNote({ ...note, id: props.note.id, userId }, props.isGlobalView) 
     showEditModal.value = false
-    
   } catch (error) {
     errorMessage.value = error.message
-        showError.value = true
+    showError.value = true
   }
 }
 </script>

@@ -22,7 +22,7 @@ const props = defineProps({
       <div class="flex items-center gap-2">
         <h5 class="text-2xl font-bold">{{ note.title }}</h5>
         <!-- Botón Editar -->
-        <EditNoteButton :note="note" />
+        <EditNoteButton :note="note" :isGlobalView="isGlobalView" />
       </div>
 
       <!-- Eliminar -->

@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useSessionStore } from "./sessionStore";
 import axios from "axios";
 
 export const useNoteStore = defineStore("note", {
@@ -12,20 +13,32 @@ export const useNoteStore = defineStore("note", {
             this.notes = data.value
         },
         async getNotesByUser(id){
-            const {data} = await axios.get(`https://localhost:7108/Note/get-by-user/${id}`)
-            this.notes = data.value
-        },
-        async createNote(note) {
             try {
-                await axios.post("https://localhost:7108/Note/create", note);
-                await this.getAllNotes();
-            }  catch (error) {
-                if (error.response && error.response.data) {
+                const {data} = await axios.get(`https://localhost:7108/Note/get-by-user/${id}`)
+            this.notes = data.value
+            } catch (error) {
+                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
             }
         },
+       async createNote(note, isGlobalView = false) {
+      const session = useSessionStore()
+      const userId = session.currentUser?.id
+
+      await axios.post(`https://localhost:7108/Note/create`, {
+        ...note,
+        userId
+      })
+
+      
+      if (isGlobalView) {
+        await this.getAllNotes()
+      } else {
+        await this.getNotesByUser(userId)
+      }
+    },
         async getAllUser(){
             const {data} = await axios.get("https://localhost:7108/User/get-all")
             return this.users = data
@@ -34,18 +47,23 @@ export const useNoteStore = defineStore("note", {
             await axios.delete(`https://localhost:7108/Note/delete/${id}`)
             this.getAllNotes();
         },
-        async updateNote(note) {
-            
-            try {
-                await axios.put(`https://localhost:7108/Note/update/${note.id}`, note)
-            }  catch (error) {
-                if (error.response && error.response.data) {
-                    throw new Error(error.response.data.message || "Error desconocido");
-                }
-                throw new Error("Error desconocido");
-            }
+        async updateNote(note, isGlobalView = false) {
+      const session = useSessionStore()
+      const userId = session.currentUser?.id
 
-        },
+      await axios.put(`https://localhost:7108/Note/update/${note.id}`, {
+        ...note,
+        userId
+      })
+
+      // 🔁 Recargar notas según la vista
+      if (isGlobalView) {
+        await this.getAllNotes()
+      } else {
+        await this.getNotesByUser(userId)
+      }
+    
+  },
         async getById(id) {
             const { data } = await axios.get(`https://localhost:7108/Note/get-by-id/${id}`)
             return data.value

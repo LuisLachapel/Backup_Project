@@ -6,6 +6,11 @@ import { useNoteStore } from '@/stores/noteStore';
 import ErrorModal from '../ErrorModal.vue';
 import ShareModal from '@/components/ShareModal.vue';
 
+
+const props = defineProps({
+  isGlobalView: { type: Boolean, default: false } 
+})
+
 const show = ref(false)
 const store = useNoteStore()
 const showCreateModal = ref(false)
@@ -14,14 +19,15 @@ const errorMessage = ref("")
 const showDownloadModal = ref(false)
 const showShareModal = ref(false)
 
-const CreateNote = async (note) =>{
-    try {
-        await store.createNote(note)
-        showCreateModal.value = false
-    } catch (error) {
-        errorMessage.value = error.message
-        showError.value = true
-    }
+
+const CreateNote = async (note) => {
+  try {
+    await store.createNote(note, props.isGlobalView) 
+    showCreateModal.value = false
+  } catch (error) {
+    errorMessage.value = error.message
+    showError.value = true
+  }
 }
 
 
