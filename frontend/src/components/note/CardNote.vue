@@ -7,7 +7,8 @@ const props = defineProps({
   notes: {
     type: Array,
     required: true
-  }
+  },
+  isGlobalView: { type: Boolean, default: false } 
 })
 </script>
 
@@ -26,7 +27,7 @@ const props = defineProps({
       </div>
 
       <!-- Eliminar -->
-      <DeleteNoteButton :id="note.id" />
+      <DeleteNoteButton :id="note.id" :isGlobalView="isGlobalView" />
     </header>
 
     <p class="mb-2">{{ note.description }}</p>

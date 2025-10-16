@@ -2,20 +2,25 @@
 import { ref } from 'vue'
 import { useNoteStore } from '@/stores/noteStore';
 import DeleteIcon from '@/assets/DeleteIcon.vue';
+import { useSessionStore } from '@/stores/sessionStore';
 
 
 const props = defineProps({
     id:{
         type: Number,
         require: true
-    }
+    },
+    isGlobalView: { type: Boolean, default: false } 
 })
 
 const store = useNoteStore()
+const sessionStore = useSessionStore()
 const closeModal = ref(false)
 
+
 const DeleteNote = async () => {
-    await store.deleteNote(props.id)
+    const userId = sessionStore.currentUser?.id
+    await store.deleteNote(props.id,props.isGlobalView, userId)
     closeModal.value = false;
 }
 </script>

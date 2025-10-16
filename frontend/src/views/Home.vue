@@ -90,7 +90,7 @@ const resetFilter = async () => {
 
   <main class="container mx-auto p-2.5">
       <section class="grid grid-cols-3 gap-4">
-          <CardNote :notes="store.notes" :isGlobalView="true"  />
+          <CardNote :notes="store.notes" :isGlobalView="false"  />
       </section>
   </main>
 
