@@ -6,8 +6,8 @@ import EditPermissionButton from './EditPermissionButton.vue';
 
 const store = usePermissionStore()
 
-onMounted(() => {
-  store.getPermissions();
+onMounted(async () => {
+  await store.getPermissions();
 })
 
 </script>

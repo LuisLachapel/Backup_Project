@@ -33,7 +33,7 @@ export const usePermissionStore = defineStore("permission",{
         },
         async insert(permission){
             try {
-                axios.post("https://localhost:7108/Permission/create",permission)
+                await axios.post("https://localhost:7108/Permission/create",permission)
                 await this.getPermissions()
             }  catch (error) {
                 if (error.response && error.response.data) {
@@ -45,7 +45,7 @@ export const usePermissionStore = defineStore("permission",{
         async update(permission){
             try {
                 await axios.put(`https://localhost:7108/Permission/update/${permission.id}`,permission)
-                
+                await this.getPermissions()
             }  catch (error) {
                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");

@@ -60,7 +60,7 @@ const toggleAccordion = () => {
     <div class="transition-all duration-300"
       :class="isOpen ? 'max-h-screen overflow-visible' : 'max-h-0 overflow-hidden'">
       <div class="py-5 border-b border-gray-200 dark:border-gray-700 grid grid-cols-3 gap-4">
-        <div v-for="permission in store.permissions" :key="permission.id"
+        <div v-for="permission in store.permissions.filter((perm) => perm.active === true)" :key="permission.id"
           class="flex items-center mb-4 gap-2 relative group">
 
           <!-- Checkbox -->
