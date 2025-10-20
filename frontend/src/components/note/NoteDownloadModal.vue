@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { useNoteStore } from '@/stores/noteStore';
+import ErrorModal from '../ErrorModal.vue';
 import FilterIcon from '@/assets/FilterIcon.vue';
 import DeleteFilterIcon from '@/assets/DeleteFilterIcon.vue';
 import PdfIcon from '@/assets/PdfIcon.vue';
@@ -48,6 +49,16 @@ const fetchSummary = async () => {
         showError.value = true
     }
 }
+
+const handleDownload = async (type) => {
+  try {
+    await store.download(type, startDate.value, endDate.value);
+  } catch (err) {
+    errorMessage.value = err.message || "Ocurrió un error al descargar.";
+    showError.value = true;
+  }
+};
+
 
 
 watch(() => props.show, async (val) => {
@@ -128,14 +139,14 @@ const resetFilter = async () => {
                     <DownloadIcon class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"/>
                     <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">¿En que formato deseas hacer
                         la descarga?</h3>
-                    <button @click="store.download('pdf', startDate, endDate)" data-modal-hide="popup-modal"
+                    <button @click="handleDownload('pdf')" data-modal-hide="popup-modal"
                         type="button"
                         class=" mr-4 text-white bg-gray-50 hover:bg-gray-100 focus:ring-4 focus:outline-none dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
                             <PdfIcon class="h-5"/>
                         <span class="flex-1 ms-3 text-black whitespace-nowrap">Pdf</span>
 
                     </button>
-                    <button @click="store.download('excel', startDate, endDate)" data-modal-hide="popup-modal"
+                    <button @click="handleDownload('excel')" data-modal-hide="popup-modal"
                         type="button"
                         class="text-white bg-gray-50 hover:bg-gray-100 focus:ring-4 focus:outline-none dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
                             <ExcelIcon class="h-5"/>
@@ -148,4 +159,6 @@ const resetFilter = async () => {
 
         </div>
     </div>
+
+      <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
 </template>

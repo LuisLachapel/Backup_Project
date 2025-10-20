@@ -4,6 +4,7 @@ import { useNoteStore } from '@/stores/noteStore';
 import DeleteIcon from '@/assets/DeleteIcon.vue';
 import { useSessionStore } from '@/stores/sessionStore';
 import AlertIcon from '@/assets/AlertIcon.vue';
+import ErrorModal from '../ErrorModal.vue';
 
 
 const props = defineProps({
@@ -18,11 +19,19 @@ const store = useNoteStore()
 const sessionStore = useSessionStore()
 const closeModal = ref(false)
 
+const errorMessage = ref("");
+const showError = ref(false);
+
 
 const DeleteNote = async () => {
-    const userId = sessionStore.currentUser?.id
-    await store.deleteNote(props.id,props.isGlobalView, userId)
+    try {
+      
+    await store.deleteNote(props.id,props.isGlobalView)
     closeModal.value = false;
+    } catch (error) {
+      errorMessage.value = error.message || "Ocurrió un error al descargar.";
+    showError.value = true;
+    }
 }
 </script>
 
@@ -96,4 +105,6 @@ const DeleteNote = async () => {
       </div>
     </div>
   </div>
+
+  <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
 </template>

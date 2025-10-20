@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { getCurrentUserId } from "@/utils/userHelper";
 
 export const usePositionStore = defineStore('position',{
     state: () =>({
@@ -19,7 +20,10 @@ export const usePositionStore = defineStore('position',{
         },
         async createPosition(position){
            try {
-              await axios.post('https://localhost:7108/Position/create',position)
+              const userId = getCurrentUserId();
+              await axios.post('https://localhost:7108/Position/create',position,{
+                params: {userId}
+              })
               this.getAllPosition()
            }  catch (error) {
                 if (error.response && error.response.data) {
@@ -34,7 +38,10 @@ export const usePositionStore = defineStore('position',{
         },
         async updatePosition(position){
             try {
-                await axios.put(`https://localhost:7108/Position/update/${position.id}`,position)
+                const userId = getCurrentUserId();
+                await axios.put(`https://localhost:7108/Position/update/${position.id}`,position, {
+                    params: {userId}
+                })
             }  catch (error) {
                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");

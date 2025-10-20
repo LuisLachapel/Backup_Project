@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { useSessionStore } from "./sessionStore";
+import { getCurrentUserId } from "@/utils/userHelper";
 import axios from "axios";
 
 export const useNoteStore = defineStore("note", {
@@ -24,8 +25,7 @@ export const useNoteStore = defineStore("note", {
             }
         },
         async createNote(note, isGlobalView = false) {
-            const session = useSessionStore()
-            const userId = session.currentUser?.id
+            const userId = getCurrentUserId();
 
             const payload = isGlobalView
                 ? { ...note }
@@ -44,23 +44,31 @@ export const useNoteStore = defineStore("note", {
             const { data } = await axios.get("https://localhost:7108/User/get-all")
             return this.users = data
         },
-        async deleteNote(id, isGlobalView = false, userId) {
-            await axios.delete(`https://localhost:7108/Note/delete/${id}`)
+        async deleteNote(id, isGlobalView = false) {
+            try {
+                const userId = getCurrentUserId();
+                    await axios.delete(`https://localhost:7108/Note/delete/${id}`,{params: {userId}})
             if (isGlobalView) {
             await this.getAllNotes(); 
         } else {
             await this.getNotesByUser(userId); 
         }
+            } catch (error) {
+                 if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Error desconocido");
+                }
+                throw new Error("Error desconocido");
+            }
         },
         async updateNote(note, isGlobalView = false) {
-            const session = useSessionStore()
-            const userId = session.currentUser?.id
+           try {
+             const userId = getCurrentUserId();
 
             const payload = isGlobalView
                 ? { ...note }
                 : { ...note, userId }
 
-            await axios.put(`https://localhost:7108/Note/update/${note.id}`, payload)
+            await axios.put(`https://localhost:7108/Note/update/${note.id}`, payload,{params:{userId}})
 
 
             if (isGlobalView) {
@@ -68,6 +76,12 @@ export const useNoteStore = defineStore("note", {
             } else {
                 await this.getNotesByUser(userId)
             }
+           } catch (error) {
+            if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Error desconocido");
+                }
+                throw new Error("Error desconocido");
+           }
         },
         async getById(id) {
             const { data } = await axios.get(`https://localhost:7108/Note/get-by-id/${id}`)
@@ -116,15 +130,18 @@ export const useNoteStore = defineStore("note", {
                 }
 
                 const { url, extension } = endpoint[type]
+                const userId = getCurrentUserId();
                 const response = await axios.get(url, {
                     params: {
                         startDate: startDate || null,
-                        endDate: endDate || null
+                        endDate: endDate || null,
+                        userId: userId
                     },
                     responseType: "blob",
-                    validateStatus: () => true
+                    validateStatus: () => true // <-- Permite manejar manualmente códigos 403, 400, etc.
                 });
 
+                // 🔹 Verificamos si la respuesta es JSON (error) o archivo (blob)
                 const contentType = response.headers["content-type"];
 
                 if (contentType && contentType.includes("application/json")) {
@@ -133,12 +150,13 @@ export const useNoteStore = defineStore("note", {
                     throw new Error(errorJson.message || "Error desconocido");
                 }
 
-                const today = new Date()
-                const fileName = `Listado de notas ${today.getDay()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`;
+                // 🔹 Si llega aquí, la respuesta es un archivo válido
+                const today = new Date();
+                const fileName = `Listado de usuarios ${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}${extension}`;
                 const fileUrl = window.URL.createObjectURL(response.data);
-                const link = document.createElement('a');
+                const link = document.createElement("a");
                 link.href = fileUrl;
-                link.setAttribute('download', fileName);
+                link.setAttribute("download", fileName);
                 document.body.appendChild(link);
                 link.click();
                 link.remove();

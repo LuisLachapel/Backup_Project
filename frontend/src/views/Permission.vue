@@ -6,7 +6,7 @@ import createButton from '@/components/permission/CreateButton.vue';
 
 
 <template>
-<h1>Vista de permisos</h1>
+
 
 <main class="container mx-auto py-2.5">
  <TablePermission/>

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { getCurrentUserId } from "@/utils/userHelper";
 
 export const usePermissionStore = defineStore("permission",{
     state: () => ({
@@ -44,7 +45,10 @@ export const usePermissionStore = defineStore("permission",{
         },
         async update(permission){
             try {
-                await axios.put(`https://localhost:7108/Permission/update/${permission.id}`,permission)
+                const userId = getCurrentUserId();
+                await axios.put(`https://localhost:7108/Permission/update/${permission.id}`,permission,{
+                    params: {userId}
+                })
                 await this.getPermissions()
             }  catch (error) {
                 if (error.response && error.response.data) {

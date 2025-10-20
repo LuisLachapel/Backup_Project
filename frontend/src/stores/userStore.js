@@ -1,13 +1,18 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { useSessionStore } from "./sessionStore";
+import { getCurrentUserId } from "@/utils/userHelper";
+
 
 
 export const useUserStore = defineStore("user", {
+    
     state: () => ({
         users: [],
-        positions: []
+        positions: [],
+        
     }),
+    
     actions: {
         async getAllUser() {
             const { data } = await axios.get("https://localhost:7108/User/get-all")
@@ -15,8 +20,7 @@ export const useUserStore = defineStore("user", {
         },
         async createUser(user) {
             try {
-                const { currentUser } = useSessionStore()
-                const userId = currentUser?.id
+                const userId = getCurrentUserId();
                 await axios.post("https://localhost:7108/User/create", user, {
                     params: { userId }
                 })
@@ -48,8 +52,7 @@ export const useUserStore = defineStore("user", {
         },
         async deleteUser(id) {
             try {
-                const { currentUser } = useSessionStore()
-                const userId = currentUser?.id
+                 const userId = getCurrentUserId();
                 await axios.delete(`https://localhost:7108/User/delete/${id}`, {
                     params: { userId }
                 })
@@ -69,8 +72,7 @@ export const useUserStore = defineStore("user", {
         },
         async updateUser(user) {
 
-            const { currentUser } = useSessionStore()
-            const userId = currentUser?.id
+             const userId = getCurrentUserId();
             try {
                 await axios.put(`https://localhost:7108/User/update/${user.id}`, user, {
                     params: { userId }
@@ -115,8 +117,7 @@ export const useUserStore = defineStore("user", {
                 };
 
                 const { url, extension } = endpoint[type];
-                const { currentUser } = useSessionStore();
-                const userId = currentUser?.id;
+                const userId = getCurrentUserId();
 
                 const response = await axios.get(url, {
                     params: {
