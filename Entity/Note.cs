@@ -8,7 +8,7 @@ namespace Entity
         public int id {  get; set; }
 
         [Required(ErrorMessage = "El título es requerido")]
-        [StringLength(20, MinimumLength = 1,
+        [StringLength(50, MinimumLength = 1,
         ErrorMessage = "El titulo debe tener entre {2} y {1} caracteres.")]
         public string title { get; set; } = string.Empty;
 

@@ -6,6 +6,7 @@ import CardNote from '@/components/note/CardNote.vue';
 import FABNote from '@/components/note/FABNote.vue';
 import FilterIcon from '@/assets/FilterIcon.vue';
 import DeleteFilterIcon from '@/assets/DeleteFilterIcon.vue';
+import FilterDate from '@/components/FilterDate.vue';
 
 // revisar: https://flowbite.com/docs/components/speed-dial/
 
@@ -54,32 +55,12 @@ const resetFilter = async () => {
       
       <h2 class="text-2xl font-bold">Registros</h2>
       
-      <div class="flex flex-wrap items-center gap-2">
-        <h2 class="text-lg font-bold">Filtrar</h2>
-
-        <!-- Inputs de fecha -->
-        <input type="date" v-model="startDate" class="border px-2 py-1 rounded" />
-        <input type="date" v-model="endDate" class="border px-2 py-1 rounded" />
-
-        <!-- Botón Filtrar -->
-        <button 
-          @click="filterNote" 
-           class="bg-white-200 text-white px-4 py-1 rounded-full hover:bg-gray-100"
-        >
-           <FilterIcon class="h-6 w-6"/>
-
-        </button>
-
-        <!-- Botón Reset -->
-        <button 
-          v-if="startDate || endDate" 
-          @click="resetFilter"
-           class="bg-red-300 text-white px-4 py-1 rounded-full hover:bg-red-200"
-        >
-          <DeleteFilterIcon class="h-6 w-6"/>
-
-        </button>
-      </div>
+      <FilterDate
+      v-model:startDate="startDate"
+      v-model:endDate="endDate"
+      @filter="filterNote"
+      @reset="resetFilter"
+      />
 
       <!-- Modal de error -->
       <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
@@ -88,7 +69,7 @@ const resetFilter = async () => {
   </div>
 
   <main class="container mx-auto p-2.5">
-      <section class="grid grid-cols-3 gap-4">
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <CardNote :notes="store.notes" :isGlobalView="true"  />
       </section>
   </main>

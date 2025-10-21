@@ -24,7 +24,7 @@ const selectUser = (user) => {
 <template>
   <div class="p-4">
     <h1 class="text-xl font-bold mb-4">Selecciona un usuario</h1>
-    <section class="grid grid-cols-3 gap-4">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         @click="selectUser(user)"
         v-for="user in userStore.users"

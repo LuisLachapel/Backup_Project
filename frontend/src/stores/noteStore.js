@@ -47,41 +47,41 @@ export const useNoteStore = defineStore("note", {
         async deleteNote(id, isGlobalView = false) {
             try {
                 const userId = getCurrentUserId();
-                    await axios.delete(`https://localhost:7108/Note/delete/${id}`,{params: {userId}})
-            if (isGlobalView) {
-            await this.getAllNotes(); 
-        } else {
-            await this.getNotesByUser(userId); 
-        }
+                await axios.delete(`https://localhost:7108/Note/delete/${id}`, { params: { userId } })
+                if (isGlobalView) {
+                    await this.getAllNotes();
+                } else {
+                    await this.getNotesByUser(userId);
+                }
             } catch (error) {
-                 if (error.response && error.response.data) {
+                if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
             }
         },
         async updateNote(note, isGlobalView = false) {
-           try {
-             const userId = getCurrentUserId();
+            try {
+                const userId = getCurrentUserId();
 
-            const payload = isGlobalView
-                ? { ...note }
-                : { ...note, userId }
+                const payload = isGlobalView
+                    ? { ...note }
+                    : { ...note, userId }
 
-            await axios.put(`https://localhost:7108/Note/update/${note.id}`, payload,{params:{userId}})
+                await axios.put(`https://localhost:7108/Note/update/${note.id}`, payload, { params: { userId } })
 
 
-            if (isGlobalView) {
-                await this.getAllNotes()
-            } else {
-                await this.getNotesByUser(userId)
-            }
-           } catch (error) {
-            if (error.response && error.response.data) {
+                if (isGlobalView) {
+                    await this.getAllNotes()
+                } else {
+                    await this.getNotesByUser(userId)
+                }
+            } catch (error) {
+                if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");
                 }
                 throw new Error("Error desconocido");
-           }
+            }
         },
         async getById(id) {
             const { data } = await axios.get(`https://localhost:7108/Note/get-by-id/${id}`)
@@ -94,6 +94,23 @@ export const useNoteStore = defineStore("note", {
                 });
 
                 this.notes = data.value;
+            } catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Error desconocido");
+                }
+                throw new Error("Error desconocido");
+            }
+        },
+        async filterNoteByDateForUser(startDate, endDate) {
+            try {
+                const userId = getCurrentUserId();
+                const { data } = await axios.get("https://localhost:7108/Note/filterbydate", {
+                    params: { startDate, endDate },
+                });
+
+                
+                const userNotes = data.value?.filter(note => note.userId === userId) || [];
+                this.notes = userNotes;
             } catch (error) {
                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");

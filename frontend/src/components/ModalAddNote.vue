@@ -102,7 +102,7 @@ const close = () => {
                   type="text"
                   class="w-full p-2.5 border rounded-lg"
                   placeholder="Ingrese el título"
-                  maxlength="20"
+                  maxlength="50"
                 />
                 <p class="text-sm text-gray-500">{{ title.length }}/20</p>
               </div>

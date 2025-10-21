@@ -76,6 +76,7 @@ namespace Services.Notes
                 title = note.title,
                 description = note.description,
                 date = note.date,
+                userId = note.userId,
 
             }).ToList();
 

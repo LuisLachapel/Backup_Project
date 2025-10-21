@@ -5,7 +5,7 @@ import ErrorModal from "./ErrorModal.vue";
 import PdfIcon from "@/assets/PdfIcon.vue";
 import ExcelIcon from "@/assets/ExcelIcon.vue";
 import FilterIcon from "@/assets/FilterIcon.vue";
-import DeleteIcon from "@/assets/DeleteIcon.vue";
+import DeleteFilterIcon from "@/assets/DeleteFilterIcon.vue";
 import DownloadIcon from "@/assets/DownloadIcon.vue";
 
 const props = defineProps({
@@ -101,7 +101,7 @@ watch(
               @click="resetFilter"
               class="bg-red-300 text-white px-4 py-1 rounded-full hover:bg-red-200"
             >
-            <DeleteIcon class="h-6 w-6"/>
+            <DeleteFilterIcon class="h-6 w-6"/>
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@ watch(
                 <th class="px-4 py-2 border">ID</th>
                 <th class="px-4 py-2 border">Nombre</th>
                 <th class="px-4 py-2 border">Posición</th>
-                <th class="px-4 py-2 border">Registros</th>
+                <th class="px-2 py-2 border">Registros</th>
                 <th class="px-4 py-2 border">Estado</th>
               </tr>
             </thead>
@@ -124,7 +124,7 @@ watch(
                 <td class="px-4 py-2 border">{{ user.id }}</td>
                 <td class="px-4 py-2 border">{{ user.name }}</td>
                 <td class="px-4 py-2 border">{{ user.position }}</td>
-                <td class="px-4 py-2 border">{{ user.records }}</td>
+                <td class="px-2 py-2 border">{{ user.records }}</td>
                 <td class="px-4 py-2 border">
                   <span :class="user.status === 'activo' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
                     {{ user.status }}

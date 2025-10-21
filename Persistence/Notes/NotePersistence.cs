@@ -188,6 +188,7 @@ namespace Persistence.Notes
                             int titleField = reader.GetOrdinal("title");
                             int descriptionField = reader.GetOrdinal("description");
                             int dateField = reader.GetOrdinal("date");
+                            int userIdField = reader.GetOrdinal("UserId");
                             while (reader.Read())
                             {
                                 Note note = new Note();
@@ -195,6 +196,7 @@ namespace Persistence.Notes
                                 note.title = reader.GetString(titleField);
                                 note.description = reader.IsDBNull(descriptionField) ? string.Empty : reader.GetString(descriptionField);
                                 note.date = reader.GetDateTime(dateField);
+                                note.userId = reader.GetInt32(userIdField);
                                 notes.Add(note);
 
                             }
