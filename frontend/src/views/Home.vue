@@ -48,36 +48,41 @@ const resetFilter = async () => {
 </script>
 
 <template>
-  <div class="py-4 ">
-    <header class="container mx-auto px-2.5 flex items-center justify-between ">
+  <div class="py-4">
+    <header class="container mx-auto px-2.5">
+      <!-- Título -->
+      <h2 class="text-2xl font-bold mb-4">Mis Registros</h2>
 
-      
-      <h2 class="text-2xl font-bold">Mis Registros</h2>
-      
-      <FilterDate
-        v-model:startDate="startDate"
-        v-model:endDate="endDate"
-        @filter="filterNote"
-        @reset="resetFilter"
-      />
+      <!-- Filtro debajo del título -->
+      <div class="w-full mb-4">
+        <FilterDate
+          v-model:startDate="startDate"
+          v-model:endDate="endDate"
+          @filter="filterNote"
+          @reset="resetFilter"
+        />
+      </div>
 
       <!-- Modal de error -->
       <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
-
     </header>
   </div>
 
-<main class="container mx-auto p-2.5">
-  <section v-if="store.notes.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <CardNote :notes="store.notes" :isGlobalView="false" />
-  </section>
+  <main class="container mx-auto p-2.5">
+    <section
+      v-if="store.notes.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
+      <CardNote :notes="store.notes" :isGlobalView="false" />
+    </section>
 
-  <section v-else class="text-center text-gray-500 py-10">
-    <p>No tienes registros disponibles.</p>
-  </section>
-</main>
+    <section v-else class="text-center text-gray-500 py-10">
+      <p>No tienes registros disponibles.</p>
+    </section>
+  </main>
 
-
-  <FABNote :isGlobalView="false"/>
+  <FABNote :isGlobalView="false" />
 </template>
+
+
 

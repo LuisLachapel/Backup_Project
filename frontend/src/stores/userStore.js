@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import { useSessionStore } from "./sessionStore";
 import { getCurrentUserId } from "@/utils/userHelper";
 
 

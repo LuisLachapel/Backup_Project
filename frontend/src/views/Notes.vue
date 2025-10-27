@@ -4,8 +4,6 @@ import { useNoteStore } from '@/stores/noteStore';
 import ErrorModal from '@/components/ErrorModal.vue';
 import CardNote from '@/components/note/CardNote.vue';
 import FABNote from '@/components/note/FABNote.vue';
-import FilterIcon from '@/assets/FilterIcon.vue';
-import DeleteFilterIcon from '@/assets/DeleteFilterIcon.vue';
 import FilterDate from '@/components/FilterDate.vue';
 
 // revisar: https://flowbite.com/docs/components/speed-dial/
@@ -49,22 +47,23 @@ const resetFilter = async () => {
 </script>
 
 <template>
-  <div class="py-4 ">
-    <header class="container mx-auto px-2.5 flex items-center justify-between ">
+    <div class="py-4">
+    <header class="container mx-auto px-2.5">
+      <!-- Título -->
+      <h2 class="text-2xl font-bold mb-4">Registros</h2>
 
-      
-      <h2 class="text-2xl font-bold">Registros</h2>
-      
-      <FilterDate
-      v-model:startDate="startDate"
-      v-model:endDate="endDate"
-      @filter="filterNote"
-      @reset="resetFilter"
-      />
+      <!-- Filtro debajo del título -->
+      <div class="w-full mb-4">
+        <FilterDate
+          v-model:startDate="startDate"
+          v-model:endDate="endDate"
+          @filter="filterNote"
+          @reset="resetFilter"
+        />
+      </div>
 
       <!-- Modal de error -->
       <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
-
     </header>
   </div>
 
