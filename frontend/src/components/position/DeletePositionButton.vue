@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { usePositionStore } from '@/stores/positionStore';
 import DeleteIcon from '@/assets/DeleteIcon.vue';
-import AlertIcon from '@/assets/AlertIcon.vue';
+
 
 const props = defineProps({
     id: {type: Number, required: 7}
@@ -56,7 +56,7 @@ const deletePosition = async() =>{
             @click="closeModal = false"
             class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
           >
-           <AlertIcon class="w-3 h-3"/>
+           <DeleteIcon class="w-3 h-3"/>
           </button>
         </div>
 
