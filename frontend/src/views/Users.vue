@@ -5,8 +5,9 @@ import FABUser from '@/components/user/FABUser.vue';
 </script>
 
 <template>
- <h1>Vista para usuarios</h1>
+    
  <main class="container mx-auto p-2.5">
+     <h2 class="text-xl font-semibold mb-4">Listado de Usuarios</h2>
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <CardUser/>
     </section>

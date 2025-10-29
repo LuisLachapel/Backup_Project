@@ -18,8 +18,8 @@ onMounted(async () => {
 
     <!-- Tabla (oculta en pantallas pequeñas) -->
     <div class="overflow-x-auto hidden sm:block rounded-lg border border-gray-300">
-      <table class="min-w-full text-sm text-left">
-        <thead class="bg-gray-100">
+      <table class="min-w-full text-sm text-left ">
+        <thead class="bg-gray-50">
           <tr>
             <th class="px-4 py-2 border-b">Nombre</th>
             <th class="px-4 py-2 border-b">Código</th>
@@ -33,9 +33,9 @@ onMounted(async () => {
           <tr
             v-for="permission in store.permissions"
             :key="permission.id"
-            class="hover:bg-gray-50"
+            class="bg-white border-b border-gray-400 hover:bg-gray-200"
           >
-            <td class="px-4 py-2 border-b">{{ permission.name }}</td>
+            <td class="px-4 py-2 border-b font-medium text-gray-900 whitespace-nowrap">{{ permission.name }}</td>
             <td class="px-4 py-2 border-b">{{ permission.code }}</td>
             <td class="px-4 py-2 border-b">{{ permission.description }}</td>
             <td class="px-4 py-2 border-b">

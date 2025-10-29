@@ -69,12 +69,14 @@ const emitReset = () => emit('reset')
       <!-- Botones -->
       <div class="flex gap-2 w-full lg:w-auto mt-2 lg:mt-0">
         <button
-      @click="emitFilter"
-      
-      class="bg-white-200 text-white px-4 py-1 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <FilterIcon class="h-6 w-6" />
-    </button>
+  @click="emitFilter"
+  :disabled="!localStartDate && !localEndDate"
+  class="bg-white text-gray-700 px-4 py-1 rounded-full hover:bg-gray-100 
+         disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <FilterIcon class="h-6 w-6" />
+</button>
+
 
 
         <button

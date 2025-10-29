@@ -17,7 +17,7 @@ onMounted(() =>{
     <h2 class="text-xl font-semibold mb-4">Listado de cargos</h2>
 
     <table class="min-w-full border border-gray-300 text-sm text-left">
-      <thead class="bg-gray-100">
+      <thead class="bg-gray-50">
         <tr>
           <th class="px-4 py-2 border-b">Nombre</th>
           <th class="px-4 py-2 border-b">Descripción</th>
@@ -29,9 +29,9 @@ onMounted(() =>{
         <tr
           v-for="position in store.positions"
           :key="position.id"
-          class="hover:bg-gray-50"
+           class="bg-white border-b border-gray-400 hover:bg-gray-200"
         >
-          <td class="px-4 py-2 border-b">{{ position.name }}</td>
+          <td class="px-4 py-2 border-b font-medium text-gray-900 whitespace-nowrap">{{ position.name }}</td>
           <td class="px-4 py-2 border-b">{{ position.description }}</td>
 
           <!-- Botón Editar -->

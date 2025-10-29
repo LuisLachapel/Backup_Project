@@ -102,32 +102,47 @@ const close = () => {
 
           <!-- Body -->
           <form class="p-4" @submit.prevent="saveUser">
-            <div class="grid gap-4 mb-4">
-              <div>
-                <label class="block mb-2 text-sm font-medium">Nombre</label>
-                <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="20"  />
-              </div>
+  <div class="grid gap-4 mb-4">
+    <!-- Nombre y Cargo en la misma fila -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Campo Nombre -->
+      <div>
+        <label class="block mb-2 text-sm font-medium">Nombre</label>
+       <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="50" required  /> <p class="text-sm text-gray-500">{{ name.length }}/50</p>
+      </div>
 
-              <div>
-                <label class="block mb-2 text-sm font-medium">Asignar una posición</label>
-                <select v-model="positionId" class="w-full p-2.5 border rounded-lg">
-                  <option disabled value="">Seleccione una posición</option>
-                  <option v-for="position in store.positions" :key="position.id" :value="position.id">
-                    {{ position.name }}
-                  </option>
-                </select>
-              </div>
+      <!-- Campo Cargo -->
+      <div>
+        <label class="block mb-2 text-sm font-medium">Asignar una posición</label>
+        <select 
+          v-model="positionId" 
+          class="w-full p-2.5 border rounded-lg"
+        >
+          <option disabled value="">Seleccione una posición</option>
+          <option 
+            v-for="position in store.positions" 
+            :key="position.id" 
+            :value="position.id"
+          >
+            {{ position.name }}
+          </option>
+        </select>
+      </div>
+    </div>
 
-              <!-- Permisos -->
-              <div>
-                <PermissionCheckBox v-model:selectedPermissions="selectedPermissions"/>
-              </div>
-            </div>
+    <!-- Permisos -->
+    <div>
+      <PermissionCheckBox v-model:selectedPermissions="selectedPermissions" />
+    </div>
+  </div>
 
-            <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5">
-              {{ props.user ? "Actualizar" : "Agregar nuevo" }}
-            </button>
-          </form>
+  <button 
+    type="submit" 
+    class="w-full text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5"
+  >
+    {{ props.user ? "Actualizar" : "Agregar nuevo" }}
+  </button>
+</form>
 
         </div>
       </div>

@@ -17,6 +17,7 @@ onMounted(async () => {
 </script>
 
 <template>
+ 
 
     <div
     v-for="user in store.users"

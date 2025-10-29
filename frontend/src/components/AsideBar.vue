@@ -1,18 +1,53 @@
 <script setup>
-import { RouterLink } from 'vue-router';
-const openSideBar = defineModel()
+import { ref, computed, onMounted } from 'vue'
+import { useSessionStore } from '@/stores/sessionStore'
+import { useRouter } from 'vue-router'
+import LogoutIcon from '@/assets/LogoutIcon.vue'
 
+const session = useSessionStore()
+const router = useRouter()
+
+const isOpen = defineModel()
+
+// 🔹 Cerrar aside cuando cambie de ruta (solo móvil)
+router.afterEach(() => {
+  if (window.innerWidth < 640) { // sm breakpoint de Tailwind
+    isOpen.value = false
+  }
+})
+
+const logout = () => {
+  session.logout()
+  router.push('/auth')
+}
+// 🧠 Iniciales del usuario
+const userInitials = computed(() => {
+  const name = session.currentUser?.name || ''
+  const parts = name.trim().split(' ')
+  if (parts.length === 0) return 'U'
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase()
+  return (parts[0][0] + parts[1][0]).toUpperCase()
+})
 </script>
 
 <template>
-    <aside id="logo-sidebar" :class="{
-        '-translate-x-full': !openSideBar
-    }" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform  bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
-        aria-label="Sidebar">
-        <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-            <ul class="space-y-2 font-medium">
-                <li>
-                    <RouterLink :to="{
+  <!-- Sidebar -->
+  <aside
+    :class="[
+      'fixed top-0 left-0 z-40 w-64 h-screen transition-transform bg-white dark:bg-gray-800 shadow-lg flex flex-col justify-between',
+      isOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+    ]"
+  >
+    <!-- Contenido principal -->
+    <div>
+      <!-- Logo o título -->
+      <div class="flex items-center justify-center h-14 border-b border-gray-200 dark:border-gray-700">
+        <h1 class="text-lg font-bold text-gray-700 dark:text-white">Backup System</h1>
+      </div>
+
+      <!-- Menú-->
+      <nav class="flex flex-col p-4 space-y-2">
+        <RouterLink :to="{
                         name: 'home'
                     }" active-class="bg-gray-100"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -26,9 +61,8 @@ const openSideBar = defineModel()
                         </svg>
                         <span class="ms-3">Principal</span>
                     </RouterLink>
-                </li>
-                <li>
-                    <RouterLink :to="{
+
+         <RouterLink :to="{
                         name: 'notes'
                     }" active-class="bg-gray-100"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -47,9 +81,8 @@ const openSideBar = defineModel()
                         
                         <span class="ms-3">Registros</span>
                     </RouterLink>
-                </li>
-                <li>
-                    <RouterLink :to="{ name: 'users' }" active-class="bg-gray-100"
+
+       <RouterLink :to="{ name: 'users' }" active-class="bg-gray-100"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -59,9 +92,8 @@ const openSideBar = defineModel()
                         </svg>
                         <span class="ms-3">Usuarios</span>
                     </RouterLink>
-                </li>
-                <li>
-                    <RouterLink :to="{ name: 'position' }" active-class="bg-gray-100"
+
+        <RouterLink :to="{ name: 'position' }" active-class="bg-gray-100"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <svg class="shrink-0 w-7 h-7 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                             fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
@@ -82,8 +114,7 @@ const openSideBar = defineModel()
                         </svg>
                         <span class="ms-3">Roles</span>
                     </RouterLink>
-                </li>
-                <li>
+
                     <RouterLink :to="{ name: 'permission' }" active-class="bg-gray-100"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <svg class="shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -99,9 +130,44 @@ const openSideBar = defineModel()
                         </svg>
                         <span class="ms-3">Permisos</span>
                     </RouterLink>
-                </li>
-            </ul>
-        </div>
-    </aside>
+      </nav>
+    </div>
 
+    <!-- Perfil del usuario -->
+    <div class="border-t border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- Avatar con iniciales -->
+        <div
+          class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600"
+        >
+          <span class="font-medium text-gray-600 dark:text-gray-300">
+            {{ userInitials }}
+          </span>
+        </div>
+
+        <!-- Nombre -->
+        <div class="flex flex-col">
+          <span class="text-sm font-semibold text-gray-800 dark:text-white">
+            {{ session.currentUser?.name || "Invitado" }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <button
+        @click="logout"
+        class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900 transition"
+        title="Cerrar sesión"
+      >
+        <LogoutIcon class="w-5 h-5 text-red-600"/>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay móvil -->
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 bg-black-50 bg-opacity-40 sm:hidden"
+    @click="isOpen = false"
+  ></div>
 </template>

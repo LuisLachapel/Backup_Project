@@ -81,7 +81,7 @@ const close = () => {
           <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ props.note ? "Editar nota" : "Crear nota" }}
+              {{ props.note ? "Editar registro" : "Crear registro" }}
             </h3>
             <button
               type="button"
@@ -104,7 +104,7 @@ const close = () => {
                   placeholder="Ingrese el título"
                   maxlength="50"
                 />
-                <p class="text-sm text-gray-500">{{ title.length }}/20</p>
+                <p class="text-sm text-gray-500">{{ title.length }}/50</p>
               </div>
 
               <div>
