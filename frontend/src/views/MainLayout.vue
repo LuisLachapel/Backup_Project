@@ -17,7 +17,6 @@ const openSideBar = ref(false)
 
   <!-- Contenido principal -->
   <div class="p-4 sm:ml-64 bg-[#f6f7f8] min-h-screen">
-    <!-- Aumenta el margen para que no se solape con el nav fijo -->
     <div class="mt-16 sm:mt-20">
       <RouterView />
     </div>

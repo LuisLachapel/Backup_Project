@@ -47,7 +47,7 @@ const fetchSummary = async () => {
     try {
         summary.value = await store.getSummary(startDate.value, endDate.value)
     } catch (err) {
-        errorMessage.value = "Error al obtener los datos"
+        errorMessage.value = err.message || "Error al obtener los datos"
         showError.value = true
     }
 }

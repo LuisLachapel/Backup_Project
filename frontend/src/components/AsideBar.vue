@@ -9,7 +9,7 @@ const router = useRouter()
 
 const isOpen = defineModel()
 
-// 🔹 Cerrar aside cuando cambie de ruta (solo móvil)
+// Cerrar aside cuando cambie de ruta (solo móvil)
 router.afterEach(() => {
   if (window.innerWidth < 640) { // sm breakpoint de Tailwind
     isOpen.value = false
@@ -20,7 +20,7 @@ const logout = () => {
   session.logout()
   router.push('/auth')
 }
-// 🧠 Iniciales del usuario
+// Iniciales del usuario
 const userInitials = computed(() => {
   const name = session.currentUser?.name || ''
   const parts = name.trim().split(' ')

@@ -44,6 +44,8 @@ const CreateUser = async (user) => {
                 </svg>
                 <span class="block mb-px text-xs font-medium">Enviar</span>
             </button>
+
+            <!--
             <button type="button"
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-4 h-4 mx-auto mb-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -54,6 +56,7 @@ const CreateUser = async (user) => {
                 </svg>
                 <span class="block mb-px text-xs font-medium">Print</span>
             </button>
+            -->
 
             <!--Descargar-->
             <button type="button" @click="showDownlodadModal = true"
@@ -68,7 +71,7 @@ const CreateUser = async (user) => {
                 <span class="block mb-px text-xs font-medium">descargar</span>
             </button>
 
-            <!--Crear posición-->
+            <!--Crear posición
             <button type="button" @click="showCreateModal = true"
                 class="w-[68px] h-[68px] text-gray-500 bg-white rounded-full border border-gray-200 dark:border-gray-600 hover:text-gray-900 shadow-xs dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-5 h-5 mx-auto mb-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -80,6 +83,7 @@ const CreateUser = async (user) => {
 
                 <span class="block mb-px text-xs font-medium">Cargo</span>
             </button>
+            -->
 
             <!--Crear Usuario-->
             <button type="button" @click="showCreateModal = true"
