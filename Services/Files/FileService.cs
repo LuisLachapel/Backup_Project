@@ -355,7 +355,7 @@ namespace Services.Files
 
 
                     // Total de registros por usuario
-                    sheet.Cell(currentRow, 1).Value = $"Total de registros de {user.username}: {user.notes.Count}";
+                    sheet.Cell(currentRow, 1).Value = $"#registros de {user.username}: {user.notes.Count}";
                     sheet.Cell(currentRow, 1).Style.Font.Italic = true;
                     currentRow += 3;
                 }

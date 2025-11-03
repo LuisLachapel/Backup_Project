@@ -186,6 +186,7 @@ namespace Persistence.Users
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@name", user.name);
+                        command.Parameters.AddWithValue("@password", user.password);
                         command.Parameters.AddWithValue("@positionId", user.positionId);
                         var result = command.ExecuteScalar();
                         return Convert.ToInt32(result);
