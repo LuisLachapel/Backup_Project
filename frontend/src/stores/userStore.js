@@ -5,13 +5,13 @@ import { getCurrentUserId } from "@/utils/userHelper";
 
 
 export const useUserStore = defineStore("user", {
-    
+
     state: () => ({
         users: [],
         positions: [],
-        
+
     }),
-    
+
     actions: {
         async getAllUser() {
             const { data } = await axios.get("https://localhost:7108/User/get-all")
@@ -51,7 +51,7 @@ export const useUserStore = defineStore("user", {
         },
         async deleteUser(id) {
             try {
-                 const userId = getCurrentUserId();
+                const userId = getCurrentUserId();
                 await axios.delete(`https://localhost:7108/User/delete/${id}`, {
                     params: { userId }
                 })
@@ -71,12 +71,27 @@ export const useUserStore = defineStore("user", {
         },
         async updateUser(user) {
 
-             const userId = getCurrentUserId();
+            const userId = getCurrentUserId();
             try {
                 await axios.put(`https://localhost:7108/User/update/${user.id}`, user, {
                     params: { userId }
                 })
 
+            } catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Error desconocido");
+                }
+                throw new Error("Error desconocido");
+            }
+        },
+        async login(user, password) {
+            try {
+                const {data} = await axios.post('https://localhost:7108/User/login', {
+                    userId: user.id,   
+                    password
+                });
+
+                return data
             } catch (error) {
                 if (error.response && error.response.data) {
                     throw new Error(error.response.data.message || "Error desconocido");

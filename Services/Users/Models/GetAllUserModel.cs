@@ -5,6 +5,7 @@ namespace Services.Users.Models
     {
         public int id { get; set; }
         public string name { get; set; } = string.Empty;
+        public string password { get; set; } = string.Empty;
         public int positionId { get; set; }
         public string position {  get; set; } = string.Empty ;
         public DateTime creationDate { get; set; }

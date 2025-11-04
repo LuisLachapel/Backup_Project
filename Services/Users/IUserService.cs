@@ -12,9 +12,10 @@ namespace Services.Users
         ResponseModel GetUserById(int id);
 
         ResponseModel InsertUser(CreateUserModel user);
-        void UpdateUser(int id, CreateUserModel user);
+        void UpdateUser(int id, UpdateUserModel user);
 
         List<UserNotesSummary> GetUserNotesSummaries(DateTime? startDate, DateTime? endDate);
+        ResponseModel Login(int userId, string password);
 
 
     }

@@ -19,6 +19,7 @@ const permissionStore = usePermissionStore()
 const selectedPermissions = ref([]) 
 
 const name = ref('')
+const password = ref('')
 const positionId = ref(null)
 
 onMounted(() =>{
@@ -33,6 +34,7 @@ watch(
       try {
         const data = await store.getById(props.user.id)
         name.value = data.name
+        password.value = data.password || "*****"
         positionId.value = data.positionId ?? null 
         const perms = await permissionStore.getUserPermissionById(props.user.id)
         selectedPermissions.value = perms.map(p => p.permissionId)
@@ -43,6 +45,7 @@ watch(
     }
     if (props.show && !props.user) {
       name.value = ""
+      password.value = ""
       positionId.value = null
       selectedPermissions.value = []
     }
@@ -66,6 +69,7 @@ const saveUser= async () => {
     // Crear
     const data = {
       name: name.value,
+      password: password.value,
       positionId: positionId.value,
       permissionIds: selectedPermissions.value 
     }
@@ -103,15 +107,23 @@ const close = () => {
           <!-- Body -->
           <form class="p-4" @submit.prevent="saveUser">
   <div class="grid gap-4 mb-4">
-    <!-- Nombre y Cargo en la misma fila -->
+    
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Campo Nombre -->
       <div>
         <label class="block mb-2 text-sm font-medium">Nombre</label>
        <input v-model="name" type="text" class="w-full p-2.5 border rounded-lg" maxlength="50" required  /> <p class="text-sm text-gray-500">{{ name.length }}/50</p>
       </div>
+      <!-- Campo de contraseña -->
+      <div>
+        <label class="block mb-2 text-sm font-medium">Contraseña</label>
+       <input v-model="password" type="password" min="6" class="w-full p-2.5 border rounded-lg" maxlength="50" :required="!props.user" 
+    :disabled="props.user"   /> <p class="text-sm text-gray-500">{{ password.length }}/50</p>
+      </div>
 
-      <!-- Campo Cargo -->
+      
+    </div>
+    <!-- Campo Cargo -->
       <div>
         <label class="block mb-2 text-sm font-medium">Asignar una posición</label>
         <select 
@@ -128,7 +140,6 @@ const close = () => {
           </option>
         </select>
       </div>
-    </div>
 
     <!-- Permisos -->
     <div>

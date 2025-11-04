@@ -1,24 +1,29 @@
-﻿using Entity;
-using Persistence.Users;
-using Services.Positions;
-using Services.Users.Models;
-using Persistence.Permissions;
-using Services.Response;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Entity;
 using Microsoft.AspNetCore.Http;
+using Persistence.Permissions;
+using Persistence.Users;
+using Services.Password;
+using Services.Positions;
+using Services.Response;
+using Services.Users.Models;
 namespace Services.Users
 {
     public class UserService : IUserService
     {
         private readonly IUserPersistence _functions;
         private readonly IPositionService _positionService;
-        private readonly IPermissionPersitence _permissionFunction; 
+        private readonly IPermissionPersitence _permissionFunction;
+        private readonly IPasswordService _passwordService;
+        
         
 
-        public UserService(IUserPersistence functions, IPositionService positionService, IPermissionPersitence permissionFunction)
+        public UserService(IUserPersistence functions, IPositionService positionService, IPermissionPersitence permissionFunction, IPasswordService passwordService)
         {
             _functions = functions;
             _positionService = positionService;
             _permissionFunction = permissionFunction;
+            _passwordService = passwordService;
         }
         
         public int DeleteUser(int id)
@@ -60,12 +65,39 @@ namespace Services.Users
             {
                 id = user.id,
                 name = user.name,
+                password = user.password,
                 positionId = user.positionId,
                 position = user.position?.name ?? string.Empty
 
             };
 
             return ResponseApiService.Response(200,response);
+
+        }
+        public ResponseModel Login(int userId, string password)
+        {
+            var user = _functions.GetById(userId);
+            if (user == null)
+            {
+                return ResponseApiService.Response(StatusCodes.Status404NotFound, null, "Usuario no encontrado");
+            }
+
+            bool isValid = _passwordService.verify(password,user.password);
+            if (!isValid)
+            {
+                return ResponseApiService.Response(StatusCodes.Status401Unauthorized, null, "Contraseña incorrecta");
+
+            }
+
+            var response = new
+            {
+                id = user.id,
+                name = user.name,
+                positionId = user.positionId,
+                position = user.position?.name
+            };
+
+            return ResponseApiService.Response(StatusCodes.Status200OK, response, "Inicio de sesión exitoso");
 
         }
 
@@ -84,10 +116,13 @@ namespace Services.Users
                return ResponseApiService.Response(StatusCodes.Status400BadRequest, null, $"La posición con id {model.positionId} no existe.");
                 
             }
+            var password = _passwordService.hashpassword(model.password);
             var user = new User
             {
                 name = model.name,
+                password = password,
                 positionId = model.positionId
+
             };
             var userId = _functions.InsertUser(user);
             
@@ -98,7 +133,7 @@ namespace Services.Users
             return ResponseApiService.Response(StatusCodes.Status201Created, null, "Usuario insertado correctamente");
         }
 
-        public void UpdateUser(int id, CreateUserModel model)
+        public void UpdateUser(int id, UpdateUserModel model)
         {
             var position = _positionService.GetById(model.positionId);
             if (position == null)

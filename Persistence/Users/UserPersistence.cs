@@ -149,12 +149,14 @@ namespace Persistence.Users
                             int nameField = reader.GetOrdinal("name");
                             int positionIdField = reader.GetOrdinal("positionId");
                             int positionNameFied = reader.GetOrdinal("position");
+                            int passwordField = reader.GetOrdinal("password");
                             while (reader.Read())
                             {
                                 user = new User
                                 {
                                     id = reader.GetInt32(idField),
                                     name = reader.GetString(nameField),
+                                    password = reader.GetString(passwordField),
                                     positionId = reader.GetInt32(positionIdField),
                                     position = new Position
                                     {
