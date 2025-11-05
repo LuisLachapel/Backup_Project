@@ -14,6 +14,6 @@ import createButton from '@/components/permission/CreateButton.vue';
 
 
 <div class="fixed bottom-6 end-12 group">
-    <createButton/>
+   <!-- <createButton/> -->
 </div>
 </template>

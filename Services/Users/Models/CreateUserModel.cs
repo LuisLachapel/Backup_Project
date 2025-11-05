@@ -9,7 +9,7 @@ namespace Services.Users.Models
         public string name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "la contraseña es requerida")]
-        [StringLength(50, MinimumLength = 8, ErrorMessage = "Solo se permite un minimo de 6 caracteres")]
+        [StringLength(50, MinimumLength = 8, ErrorMessage = "Solo se permite un minimo de 8 caracteres")]
         public string password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El cargo es requerido")]

@@ -5,6 +5,7 @@ import { useSessionStore } from '@/stores/sessionStore';
 import { useRouter } from 'vue-router';
 import PasswordModal from '@/components/PasswordModal.vue';
 import { nextTick } from 'vue'
+import ErrorModal from '@/components/ErrorModal.vue';
 
 
 const userStore = useUserStore();
@@ -13,6 +14,8 @@ const router = useRouter();
 
 const showModal = ref(false);
 const selectedUser = ref(null);
+const errorMessage = ref("");
+const showError = ref(false);
 
 onMounted(() => {
   userStore.getAllUser();
@@ -20,7 +23,7 @@ onMounted(() => {
 
 const selectUser = (user) => {
   selectedUser.value = user;
-  showModal.value = true; // mostrar modal
+  showModal.value = true; 
 };
 
 const closeModal = () => {
@@ -28,25 +31,29 @@ const closeModal = () => {
   selectedUser.value = null;
 };
 
-// Lógica cuando se confirma la contraseña
+
 const confirmPassword = async ({ user, password }) => {
   try {
     const response = await userStore.login(user, password);
 
-    // ✅ Aquí response ya ES el JSON del backend
-    if (response.statusCode === 200) {
-      session.setUser(response.data);
-  await nextTick();
-  router.push({ name: 'home' });
+   
+    if (response.statusCode === 200 && response.success && response.value) {
+      session.setUser(response.value); 
+
+      await nextTick();
+      router.push({ name: 'home' });
     } else {
       alert(response.message || 'Error en el inicio de sesión.');
     }
   } catch (error) {
-    alert(error.message || 'Contraseña incorrecta o error de conexión.');
+    errorMessage.value = error.message;
+        showError.value = true;
   } finally {
     closeModal();
   }
 };
+
+
 
 </script>
 
@@ -81,7 +88,7 @@ const confirmPassword = async ({ user, password }) => {
       </div>
     </section>
 
-    <!-- Modal de contraseña -->
+    
     <PasswordModal
       :show="showModal"
       :user="selectedUser"
@@ -89,5 +96,7 @@ const confirmPassword = async ({ user, password }) => {
       @confirm="confirmPassword"
     />
   </div>
+
+  <ErrorModal :show="showError" :message="errorMessage" @close="showError = false" />
 </template>
 

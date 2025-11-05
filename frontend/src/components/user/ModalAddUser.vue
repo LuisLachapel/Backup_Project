@@ -34,7 +34,7 @@ watch(
       try {
         const data = await store.getById(props.user.id)
         name.value = data.name
-        password.value = data.password || "*****"
+        password.value =  "***************"
         positionId.value = data.positionId ?? null 
         const perms = await permissionStore.getUserPermissionById(props.user.id)
         selectedPermissions.value = perms.map(p => p.permissionId)

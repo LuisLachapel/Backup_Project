@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useRouter } from 'vue-router'
 import LogoutIcon from '@/assets/LogoutIcon.vue'
